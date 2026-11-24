@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Virtual Tour Pasar Basa</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css">
+<link rel="stylesheet" href="vr.css">
+</head><body>
+<div id="panorama"></div>
+
+<div id="vr-topbar">
+  <a class="vr-btn" href="../index.html">🏠 Beranda</a>
+  <button class="vr-btn" id="btn-back">← Kembali</button>
+  <button class="vr-btn" id="btn-audio">🔊</button>
+</div>
+
+<!-- Maulidya: UI learning -->
+<div id="mission-bar"></div>
+<div id="vr-panel" hidden></div>
+
+<script>window.BASE = '../';</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
+<script src="../shared/data.js"></script>
+<script src="../shared/audio.js"></script>
+<script src="../shared/progress.js"></script>
+<script src="../shared/dialog-ui.js"></script>
+<script src="vr.js"></script>
+<script src="learning.js"></script>
+</body></html>

@@ -1,0 +1,13 @@
+[{
+  "id": "beli-cabai",
+  "penjual": "Sugeng enjang, Mbak. Pados menapa?",
+  "arti": "Selamat pagi, Mbak. Cari apa?",
+  "pilihan": [
+    { "teks": "Sugeng enjang, Bu. Kula badhe tumbas lombok.", "benar": true,
+      "umpanBalik": "Tepat! Sopan, memakai krama untuk penjual." },
+    { "teks": "Heh, aku arep tuku lombok.", "benar": false,
+      "umpanBalik": "Kurang sesuai: ngoko terlalu kasual untuk penjual yang lebih tua." },
+    { "teks": "Lombok pira?", "benar": false,
+      "umpanBalik": "Dipakai nanti saat menawar, tapi belum menyapa dulu." }
+  ]
+}]

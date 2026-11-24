@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AR Kartu Pasar Basa</title>
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<link rel="stylesheet" href="ar.css">
+</head><body>
+
+<!-- ===== Zaidan: UI overlay ===== -->
+<div id="ar-ui">
+  <div id="topbar">
+    <a class="ar-btn" href="../index.html">🏠</a>
+    <div id="mission-bar"></div>
+    <button class="ar-btn" id="btn-sound">🔊</button>
+  </div>
+  <div id="badge">Arahkan kamera ke kartu</div>
+  <div id="hint" hidden></div>
+  <div id="panel" hidden></div>
+  <div id="controls">
+    <button class="ar-btn" id="btn-info" disabled>ℹ️ Info</button>
+    <button class="ar-btn" id="btn-audio" disabled>🔊</button>
+    <button class="ar-btn" id="btn-rot-l" disabled>⟲</button>
+    <button class="ar-btn" id="btn-rot-r" disabled>⟳</button>
+    <button class="ar-btn" id="btn-plus" disabled>＋</button>
+    <button class="ar-btn" id="btn-minus" disabled>－</button>
+    <button class="ar-btn" id="btn-dialog">💬 Dialog</button>
+  </div>
+  <div id="intro">
+    <div class="card">
+      <h2>AR Kartu Pasar Basa</h2>
+      <ol><li>Siapkan kartu cabai, tomat, atau pisang.</li><li>Izinkan akses kamera.</li><li>Arahkan kamera ke kartu (20–40 cm, cahaya cukup).</li><li>Selesaikan misi: 3 kosakata + 1 dialog.</li></ol>
+      <button class="ar-btn primary" id="btn-start">Mulai AR</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Wyena: scene AR (jangan diubah oleh Zaidan) ===== -->
+<a-scene id="scene" mindar-image="imageTargetSrc: ../assets/markers/targets.mind; uiScanning: no; uiLoading: yes; autoStart: false;"
+         color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
+         vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+  <a-assets>
+    <a-asset-item id="m-cabai"  src="../assets/models/cabai.glb"></a-asset-item>
+    <a-asset-item id="m-tomat"  src="../assets/models/tomat.glb"></a-asset-item>
+    <a-asset-item id="m-pisang" src="../assets/models/pisang.glb"></a-asset-item>
+  </a-assets>
+  <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+  <a-entity id="t-cabai"  mindar-image-target="targetIndex: 0"><a-gltf-model id="obj-cabai"  src="#m-cabai"  scale="0.5 0.5 0.5" position="0 0 0.1"></a-gltf-model></a-entity>
+  <a-entity id="t-tomat"  mindar-image-target="targetIndex: 1"><a-gltf-model id="obj-tomat"  src="#m-tomat"  scale="0.5 0.5 0.5" position="0 0 0.1"></a-gltf-model></a-entity>
+  <a-entity id="t-pisang" mindar-image-target="targetIndex: 2"><a-gltf-model id="obj-pisang" src="#m-pisang" scale="0.5 0.5 0.5" position="0 0 0.1"></a-gltf-model></a-entity>
+</a-scene>
+
+<script>window.BASE = '../';</script>
+<script src="../shared/data.js"></script>
+<script src="../shared/audio.js"></script>
+<script src="../shared/progress.js"></script>
+<script src="../shared/dialog-ui.js"></script>
+<script src="ar-tracking.js"></script>
+<script src="ar-ui.js"></script>
+</body></html>

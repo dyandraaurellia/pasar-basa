@@ -1,0 +1,8 @@
+[
+  { "id": "cabai",  "jawa": "lombok",  "indonesia": "cabai",  "audio": "shared/audio/cabai.mp3",
+    "model": "assets/models/cabai.glb",  "markerIndex": 0, "vrScene": "kios-sayur" },
+  { "id": "tomat",  "jawa": "tomat",   "indonesia": "tomat",  "audio": "shared/audio/tomat.mp3",
+    "model": "assets/models/tomat.glb",  "markerIndex": 1, "vrScene": "kios-sayur" },
+  { "id": "pisang", "jawa": "gedhang", "indonesia": "pisang", "audio": "shared/audio/pisang.mp3",
+    "model": "assets/models/pisang.glb", "markerIndex": 2, "vrScene": "kios-buah" }
+]
