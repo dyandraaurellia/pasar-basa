@@ -1,21 +1,271 @@
-<!DOCTYPE html>
-<html lang="id"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Pasar Basa — Belajar Bahasa Jawa</title>
-<link rel="stylesheet" href="css/main.css">
-</head><body><div class="wrap">
-  <h1>Pasar Basa</h1>
-  <p class="sub">Belajar bahasa Jawa di pasar tradisional lewat VR 360° dan AR kartu.</p>
-  <div class="card">
-    <a class="btn" href="vr/index.html">🧭 Mulai Virtual Tour 360°</a>
-    <a class="btn alt" href="ar/index.html">📷 Mulai AR Kartu</a>
-  </div>
-  <div class="card">
-    <strong>Petunjuk singkat</strong>
-    <ol>
-      <li><b>VR:</b> geser layar untuk melihat sekeliling, ketuk panah untuk berpindah lokasi, ketuk ikon barang untuk belajar kosakata.</li>
-      <li><b>AR:</b> izinkan kamera, arahkan ke kartu cabai/tomat/pisang (jarak 20–40 cm, cahaya cukup).</li>
-      <li>Selesaikan misi: 3 kosakata + 1 dialog dengan penjual.</li>
-    </ol>
-  </div>
-</div></body></html>
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="theme-color" content="#25372A" />
+
+    <meta name="description" content="Pasar Basa, media pembelajaran bahasa Jawa melalui AR kartu dan Virtual Tour 360 derajat." />
+
+    <title>Pasar Basa — Sinau Basa Jawa</title>
+
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+
+  <body class="home-page">
+    <!-- NAVIGASI -->
+    <header class="navbar">
+      <div class="container nav-inner">
+        <a href="index.html" class="brand">
+          <span class="brand-icon">PB</span>
+          <span>Pasar Basa<span class="brand-dot">.</span></span>
+        </a>
+
+        <nav aria-label="Navigasi utama">
+          <a href="#beranda">Beranda</a>
+          <a href="#eksplorasi">Eksplorasi</a>
+          <a href="#panduan">Panduan</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="beranda">
+        <div class="container hero-grid">
+          <div class="hero-content">
+            <div class="eyebrow">SINAU BASA · NJELAJAH PASAR</div>
+
+            <h1>
+              Sinau Basa Jawa,
+              <span>Sambil Belanja.</span>
+            </h1>
+
+            <p class="hero-description">Kenali kosakata, pahami unggah-ungguh, dan praktikkan percakapan bahasa Jawa melalui pengalaman interaktif di pasar tradisional.</p>
+
+            <div class="hero-actions">
+              <a href="vr/index.html" class="btn btn-primary"> Mulai Petualangan → </a>
+
+              <a href="#panduan" class="btn btn-outline"> Cara Bermain </a>
+            </div>
+
+            <div class="hero-features">
+              <span>AR Kartu</span>
+              <span>VR 360°</span>
+              <span>Simulasi Dialog</span>
+            </div>
+          </div>
+
+          <div class="hero-visual">
+            <div class="character-circle"></div>
+
+            <div class="speech-card">
+              <strong>Sugeng rawuh!</strong>
+              <span>Ayo sinau basa Jawa!</span>
+            </div>
+
+            <img class="nadia-hero" src="assets/nadia.webp" alt="Nadia, pemandu belajar Pasar Basa" fetchpriority="high" />
+
+            <div class="character-name">
+              <strong>Nadia</strong>
+              <span>Teman belajarmu</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MISI -->
+      <section class="mission-section">
+        <div class="container mission-inner">
+          <div>
+            <div class="eyebrow light">MISI BELANJA NADIA</div>
+
+            <h2>Ayo bantu Nadia berbelanja!</h2>
+
+            <p>Ibu menitipkan tiga jenis barang. Pelajari bahasanya, temukan penjualnya, dan selesaikan tugas belanja.</p>
+          </div>
+
+          <div class="shopping-items">
+            <div class="shopping-item">
+              <span aria-hidden="true">🌶️</span>
+              <strong>Lombok</strong>
+              <small>Cabai</small>
+            </div>
+
+            <div class="shopping-item">
+              <span aria-hidden="true">🍅</span>
+              <strong>Tomat</strong>
+              <small>Tomat</small>
+            </div>
+
+            <div class="shopping-item">
+              <span aria-hidden="true">🍌</span>
+              <strong>Gedhang</strong>
+              <small>3 buah pisang</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PILIH MODUL -->
+      <section class="section container" id="eksplorasi">
+        <div class="section-heading">
+          <div class="eyebrow">DUA PENGALAMAN, SATU PETUALANGAN</div>
+
+          <h2>Pilih pengalaman belajarmu</h2>
+
+          <p>Kenali kosakata melalui AR, lalu praktikkan dalam misi belanja VR.</p>
+        </div>
+
+        <div class="module-grid">
+          <!-- AR -->
+          <article class="module-card">
+            <div class="module-image ar-visual">
+              <span class="module-tag"> AUGMENTED REALITY </span>
+
+              <div class="scan-decoration">
+                <div class="flashcard">
+                  <span aria-hidden="true">🌶️</span>
+                  <strong>LOMBOK</strong>
+                  <small>Kartu Edukasi</small>
+                </div>
+              </div>
+            </div>
+
+            <div class="module-content">
+              <span class="module-number"> 01 — KENALI </span>
+
+              <h3>AR Kartu Edukasi</h3>
+
+              <p>Pindai kartu cabai, tomat, dan pisang menggunakan kamera. Amati objek 3D dan pelajari kosakata bahasa Jawa.</p>
+
+              <div class="module-features">
+                <span>Image Tracking</span>
+                <span>Objek 3D</span>
+                <span>Kosakata</span>
+              </div>
+
+              <a href="ar/index.html" class="btn btn-primary full"> Mulai AR Kartu → </a>
+
+              <small class="module-note"> Memerlukan kamera dan kartu AR. </small>
+            </div>
+          </article>
+
+          <!-- VR -->
+          <article class="module-card">
+            <div class="module-image vr-visual">
+              <img src="assets/panorama/kios-sayur.jpg" alt="Panorama asli kios sayur Pasar Basa" loading="lazy" />
+
+              <span class="module-tag"> VIRTUAL REALITY </span>
+
+              <span class="degree-label">360°</span>
+
+              <img class="seller-preview" src="assets/bu-sari.webp" alt="" loading="lazy" />
+            </div>
+
+            <div class="module-content">
+              <span class="module-number"> 02 — PRAKTIKKAN </span>
+
+              <h3>Virtual Tour 360°</h3>
+
+              <p>Jelajahi pasar tradisional, berinteraksi dengan penjual, dan selesaikan misi belanja menggunakan bahasa Jawa.</p>
+
+              <div class="module-features">
+                <span>Panorama 360°</span>
+                <span>Dialog Interaktif</span>
+                <span>Misi Belanja</span>
+              </div>
+
+              <a href="vr/index.html" class="btn btn-primary full"> Mulai Virtual Tour 360° → </a>
+
+              <small class="module-note"> Bisa dimainkan tanpa headset VR. </small>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- PANDUAN -->
+      <section class="guide-section" id="panduan">
+        <div class="container section">
+          <div class="section-heading">
+            <div class="eyebrow">CARA BERMAIN</div>
+
+            <h2>Perjalanan belajarmu</h2>
+
+            <p>Belajar bahasa Jawa melalui tiga tahapan yang saling melengkapi.</p>
+          </div>
+
+          <div class="steps-grid">
+            <article class="step-card">
+              <span class="step-number">01</span>
+
+              <div class="step-icon" aria-hidden="true">📷</div>
+
+              <h3>Kenali Kosakata</h3>
+
+              <p>Izinkan akses kamera dan pindai kartu AR. Gunakan kartu dengan pencahayaan cukup dan jarak sekitar 20–40 cm.</p>
+            </article>
+
+            <article class="step-card">
+              <span class="step-number">02</span>
+
+              <div class="step-icon" aria-hidden="true">🧭</div>
+
+              <h3>Jelajahi Pasar</h3>
+
+              <p>Geser panorama untuk melihat sekeliling. Tekan hotspot untuk berpindah lokasi, belajar kosakata, dan berbicara dengan penjual.</p>
+            </article>
+
+            <article class="step-card">
+              <span class="step-number">03</span>
+
+              <div class="step-icon" aria-hidden="true">🏆</div>
+
+              <h3>Selesaikan Misi</h3>
+
+              <p>Beli semua barang titipan Ibu, selesaikan percakapan, dan jawab tantangan bahasa untuk melihat hasil pembelajaran.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PENUTUP -->
+      <section class="container section">
+        <div class="final-banner">
+          <img src="assets/nadia.webp" alt="" loading="lazy" />
+
+          <div>
+            <div class="eyebrow light">SIAP BERBELANJA?</div>
+
+            <h2>Ayo mulai petualanganmu!</h2>
+
+            <p>Belajar kosakata dan unggah-ungguh basa melalui pengalaman berbelanja yang interaktif.</p>
+
+            <a href="vr/index.html" class="btn btn-gold"> Mulai Misi Belanja → </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div>
+          <h3>Pasar Basa.</h3>
+
+          <p>Media pembelajaran bahasa Jawa berbasis AR dan VR.</p>
+        </div>
+
+        <div class="footer-info">
+          <strong>Final Project AR/VR 2026</strong>
+          <span>Kelompok 2</span>
+          <span>Fakultas Ilmu Komputer</span>
+          <span>Universitas Brawijaya</span>
+        </div>
+      </div>
+
+      <div class="container copyright">© 2026 Pasar Basa · Proyek Edukasi</div>
+    </footer>
+  </body>
+</html>

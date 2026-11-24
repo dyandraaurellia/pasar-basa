@@ -1,139 +1,276 @@
-// Materi VR masih berupa draf dan perlu diverifikasi oleh penutur bahasa Jawa.
+// Pasar Basa - Materi Pembelajaran Unggah-Ungguh Basa
+// Dialog utama menggunakan basa krama.
+// Basa ngoko digunakan sebagai pengecoh edukatif.
+// Draf: materi perlu divalidasi sebelum perekaman audio.
+
 const vrTransactions = {
   "bu-sari": [
     {
-      line: "Sugeng enjang, Mbak. Pados menapa?",
-      translation: "Selamat pagi, Mbak. Cari apa?",
-      goal: "Sapa Bu Sari dan pesan cabai dengan krama.",
-      words: [["Sugeng enjang", "Selamat pagi"], ["Tumbas", "Membeli"], ["Lombok", "Cabai"]],
+      line: "Sugeng enjing, Mbak. Badhe tumbas menapa?",
+      translation: "Selamat pagi, Mbak. Ingin membeli apa?",
+      goal: "Sapa Bu Sari dan pesan cabai menggunakan basa krama.",
+      words: [
+        ["Sugeng enjing", "Selamat pagi"],
+        ["Tumbas", "Membeli"],
+        ["Lombok", "Cabai"]
+      ],
       options: [
-        ["Sugeng enjang, Bu. Kula badhe tumbas lombok.", "Kamu menyapa Bu Sari dan menggunakan tumbas (membeli) serta lombok (cabai)."],
-        ["Heh, aku arep tuku lombok.", "Pesanannya sesuai. Untuk latihan ini, sapa Bu Sari dan gunakan ragam krama."],
-        ["Lombok pira?", "Kalimat ini menanyakan harga cabai. Sampaikan dulu barang yang ingin kamu beli."],
+        [
+          "Sugeng enjing, Bu. Kula badhe tumbas lombok.",
+          "Benar! Kamu menyapa Bu Sari dan memesan cabai menggunakan basa krama."
+        ],
+        [
+          "Aku arep tuku lombok, Bu.",
+          "Barang yang kamu pesan sudah benar, tetapi kalimat tersebut menggunakan basa ngoko. Gunakan kula badhe tumbas."
+        ],
+        [
+          "Kula badhe tumbas pisang, Bu.",
+          "Bahasamu sudah sopan, tetapi barang yang harus dibeli adalah cabai."
+        ]
       ],
       answer: 0,
-      reply: ["Inggih, lombokipun kula pendhetaken.", "Baik, saya ambilkan cabainya."],
+      reply: [
+        "Inggih, sekedhap, Mbak.",
+        "Baik, sebentar, Mbak."
+      ]
     },
     {
-      line: "Menapa wonten tambahan, Mbak?",
-      translation: "Ada tambahan, Mbak?",
-      goal: "Tambahkan tomat ke pesanan.",
-      words: [["Tambahan", "Tambahan"], ["Ugi", "Juga"], ["Tomat", "Tomat"]],
+      line: "Badhe tumbas menapa malih, Mbak?",
+      translation: "Ingin membeli apa lagi, Mbak?",
+      goal: "Tambahkan tomat ke pesanan menggunakan basa krama.",
+      words: [
+        ["Menapa", "Apa"],
+        ["Malih", "Lagi"],
+        ["Ugi", "Juga"]
+      ],
       options: [
-        ["Boten, Bu. Sampun cekap.", "Kamu mengatakan pesanan sudah cukup. Ibu juga menitipkan tomat."],
-        ["Tomatipun ugi, Bu.", "Ugi berarti juga. Kamu menambahkan tomat ke pesanan cabai."],
-        ["Gedhangipun ugi, Bu.", "Gedhang berarti pisang. Tambahkan tomat saat berbelanja di kios sayur."],
+        [
+          "Aku arep tuku tomat uga, Bu.",
+          "Pesananmu benar, tetapi kalimat tersebut menggunakan basa ngoko."
+        ],
+        [
+          "Kula badhe tumbas tomat ugi, Bu.",
+          "Benar! Kamu menambahkan tomat ke pesanan menggunakan basa krama."
+        ],
+        [
+          "Boten, Bu. Sampun cekap.",
+          "Bahasamu sudah sopan, tetapi kamu masih perlu membeli tomat."
+        ]
       ],
       answer: 1,
-      reply: ["Inggih, kula tambahaken tomat.", "Baik, saya tambahkan tomat."],
+      reply: [
+        "Inggih, Mbak.",
+        "Baik, Mbak."
+      ]
     },
     {
-      line: "Lombok saha tomat sampun siap, Mbak.",
-      translation: "Cabai dan tomat sudah siap, Mbak.",
+      line: "Sampun, Mbak.",
+      translation: "Sudah, Mbak.",
       goal: "Tanyakan total harga cabai dan tomat.",
-      words: [["Pinten", "Berapa (krama)"], ["Reginipun", "Harganya"], ["Sedaya", "Semua"]],
+      words: [
+        ["Pinten", "Berapa"],
+        ["Reginipun", "Harganya"],
+        ["Sedaya", "Semua"]
+      ],
       options: [
-        ["Kula badhe tumbas lombok, Bu.", "Kalimat ini memesan cabai. Pesanan sudah siap, jadi sekarang tanyakan total harganya."],
-        ["Pinten reginipun tomat, Bu?", "Kamu sudah memakai ungkapan untuk bertanya harga, tetapi baru menanyakan harga tomat."],
-        ["Pinten reginipun sedaya, Bu?", "Pinten reginipun menanyakan harga. Sedaya mencakup semua barang dalam pesanan."],
+        [
+          "Pira regane kabeh, Bu?",
+          "Maksud pertanyaanmu benar, tetapi masih menggunakan basa ngoko."
+        ],
+        [
+          "Pinten reginipun tomat, Bu?",
+          "Kamu hanya menanyakan harga tomat, bukan seluruh pesanan."
+        ],
+        [
+          "Pinten reginipun sedaya, Bu?",
+          "Benar! Kamu menanyakan total harga seluruh pesanan menggunakan basa krama."
+        ]
       ],
       answer: 2,
-      reply: ["Sedayanipun Rp15.000, Mbak.", "Totalnya Rp15.000, Mbak."],
+      reply: [
+        "Gangsal welas ewu rupiyah, Mbak.",
+        "Lima belas ribu rupiah, Mbak."
+      ]
     },
     {
-      line: "Sedayanipun Rp15.000. Badhe mbayar sapunika, Mbak?",
-      translation: "Totalnya Rp15.000. Mau membayar sekarang, Mbak?",
-      goal: "Setujui pembayaran dan ucapkan terima kasih.",
-      words: [["Inggih", "Iya"], ["Menika artanipun", "Ini uangnya"], ["Matur nuwun", "Terima kasih"]],
+      line: "Sedayanipun gangsal welas ewu rupiyah, Mbak.",
+      translation: "Totalnya lima belas ribu rupiah, Mbak.",
+      goal: "Bayar pesanan dan ucapkan terima kasih.",
+      words: [
+        ["Inggih", "Iya"],
+        ["Menika artanipun", "Ini uangnya"],
+        ["Matur nuwun", "Terima kasih"]
+      ],
       options: [
-        ["Boten tumbas, Bu.", "Boten tumbas berarti tidak jadi membeli. Misi Nadia meminta cabai dan tomat."],
-        ["Inggih, Bu. Menika artanipun. Matur nuwun.", "Kamu menyetujui pembelian, menyerahkan uang, dan menutup transaksi dengan sopan."],
-        ["Pados menapa, Bu?", "Kalimat ini bertanya apa yang sedang dicari. Bu Sari sedang menunggu pembayaran."],
+        [
+          "Iyo, Bu. Iki dhuwite. Matur nuwun.",
+          "Maksudmu sudah benar, tetapi gunakan inggih dan menika artanipun agar sesuai dengan basa krama."
+        ],
+        [
+          "Inggih, Bu. Menika artanipun. Matur nuwun.",
+          "Benar! Kamu membayar pesanan dan mengucapkan terima kasih dengan sopan."
+        ],
+        [
+          "Boten tumbas, Bu.",
+          "Kalimat tersebut berarti tidak jadi membeli. Selesaikan transaksi dengan membayar."
+        ]
       ],
       answer: 1,
-      reply: ["Matur nuwun, Mbak. Menika lombok saha tomatipun.", "Terima kasih, Mbak. Ini cabai dan tomatnya."],
-    },
+      reply: [
+        "Inggih, sami-sami, Mbak.",
+        "Iya, sama-sama, Mbak."
+      ]
+    }
   ],
+
   "pak-budi": [
     {
-      line: "Badhe tumbas menapa, Mbak?",
-      translation: "Ingin membeli apa, Mbak?",
-      goal: "Pesan pisang dengan krama.",
-      words: [["Badhe", "Ingin"], ["Tumbas", "Membeli"], ["Gedhang", "Pisang"]],
+      line: "Sugeng enjing, Mbak. Badhe tumbas menapa?",
+      translation: "Selamat pagi, Mbak. Ingin membeli apa?",
+      goal: "Sapa Pak Budi dan pesan pisang menggunakan basa krama.",
+      words: [
+        ["Badhe", "Ingin"],
+        ["Tumbas", "Membeli"],
+        ["Pisang", "Pisang (krama)"]
+      ],
       options: [
-        ["Kula badhe tumbas lombok, Pak.", "Lombok berarti cabai. Gunakan gedhang untuk memesan pisang."],
-        ["Kula badhe tumbas gedhang, Pak.", "Gedhang berarti pisang. Kamu sudah memesan barang yang tepat dengan krama."],
-        ["Aku arep tuku gedhang.", "Barangnya tepat. Untuk latihan krama, gunakan kula badhe tumbas."],
+        [
+          "Aku arep tuku gedhang, Pak.",
+          "Barangnya sudah benar, tetapi kalimat tersebut menggunakan basa ngoko."
+        ],
+        [
+          "Sugeng enjing, Pak. Kula badhe tumbas pisang.",
+          "Benar! Kamu menyapa dan memesan pisang menggunakan basa krama."
+        ],
+        [
+          "Kula badhe tumbas lombok, Pak.",
+          "Bahasamu sudah sopan, tetapi barang yang harus dibeli adalah pisang."
+        ]
       ],
       answer: 1,
-      reply: ["Inggih, wonten gedhang, Mbak.", "Baik, ada pisang, Mbak."],
+      reply: [
+        "Inggih, Mbak.",
+        "Baik, Mbak."
+      ]
     },
     {
-      line: "Badhe tumbas gedhang pinten, Mbak?",
-      translation: "Mau membeli berapa buah pisang, Mbak?",
-      goal: "Pilih jumlah pisang sesuai daftar belanja.",
-      words: [["Pinten", "Berapa (krama)"], ["Telu", "Tiga (ngoko)"], ["Tiga", "Tiga (krama)"]],
+      line: "Badhe tumbas pinten, Mbak?",
+      translation: "Ingin membeli berapa, Mbak?",
+      goal: "Pilih tiga buah pisang sesuai daftar belanja.",
+      words: [
+        ["Pinten", "Berapa"],
+        ["Telu", "Tiga (ngoko)"],
+        ["Tiga", "Tiga (krama)"]
+      ],
       quantity: 3,
-      reply: ["Inggih, gedhang tiga.", "Baik, tiga buah pisang."],
+      reply: [
+        "Inggih, pisang tiga.",
+        "Baik, tiga buah pisang."
+      ]
     },
     {
-      line: "Gedhangipun badhe dipunbungkus, Mbak?",
-      translation: "Pisangnya mau dibungkus, Mbak?",
-      goal: "Minta pisang dibungkus untuk dibawa pulang.",
-      words: [["Dipunbungkus", "Dibungkus"], ["Inggih", "Iya"], ["Boten", "Tidak"]],
+      line: "Badhe dipunbungkus, Mbak?",
+      translation: "Ingin dibungkus, Mbak?",
+      goal: "Minta Pak Budi membungkus pisang.",
+      words: [
+        ["Dipunbungkus", "Dibungkus"],
+        ["Nyuwun", "Meminta"],
+        ["Inggih", "Iya"]
+      ],
       options: [
-        ["Inggih, dipunbungkus, Pak.", "Kamu menyetujui dan meminta pisangnya dibungkus dengan sopan."],
-        ["Boten, Pak.", "Boten berarti tidak. Nadia ingin membawa pulang pesanannya dalam bungkusan."],
-        ["Gedhang tiga, Pak.", "Kamu mengulangi jumlah pisang. Pak Budi sedang menanyakan apakah pisangnya perlu dibungkus."],
+        [
+          "Inggih, Pak. Nyuwun dipunbungkus.",
+          "Benar! Kamu meminta pesanan dibungkus menggunakan basa krama."
+        ],
+        [
+          "Iyo, Pak. Dibungkus wae.",
+          "Maksudmu benar, tetapi kalimat tersebut menggunakan basa ngoko."
+        ],
+        [
+          "Boten, Pak.",
+          "Boten berarti tidak. Kamu perlu meminta pesanan dibungkus."
+        ]
       ],
       answer: 0,
-      reply: ["Inggih, kula bungkus rumiyin.", "Baik, saya bungkus dulu."],
+      reply: [
+        "Inggih, sekedhap, Mbak.",
+        "Baik, sebentar, Mbak."
+      ]
     },
     {
-      line: "Sampun kula bungkus. Sedayanipun Rp9.000, Mbak.",
-      translation: "Sudah saya bungkus. Totalnya Rp9.000, Mbak.",
-      goal: "Bayar sesuai total harga dan berterima kasih.",
-      words: [["Sedayanipun", "Totalnya"], ["Menika artanipun", "Ini uangnya"], ["Matur nuwun", "Terima kasih"]],
+      line: "Sampun, Mbak. Sedayanipun sangang ewu rupiyah.",
+      translation: "Sudah, Mbak. Totalnya sembilan ribu rupiah.",
+      goal: "Bayar pesanan dan ucapkan terima kasih.",
+      words: [
+        ["Sedayanipun", "Semuanya"],
+        ["Menika artanipun", "Ini uangnya"],
+        ["Matur nuwun", "Terima kasih"]
+      ],
       options: [
-        ["Pinten reginipun, Pak?", "Ini cara menanyakan harga. Pak Budi sudah menyebut total Rp9.000, jadi kamu bisa membayar."],
-        ["Boten tumbas, Pak.", "Kamu mengatakan tidak jadi membeli. Selesaikan pesanan tiga pisang dengan membayar."],
-        ["Inggih, Pak. Menika artanipun. Matur nuwun.", "Kamu menerima harga yang disebutkan, membayar, dan mengucapkan terima kasih."],
+        [
+          "Iyo, Pak. Iki dhuwite. Matur nuwun.",
+          "Maksudmu benar, tetapi gunakan basa krama ketika berbicara dengan Pak Budi."
+        ],
+        [
+          "Pinten reginipun, Pak?",
+          "Pak Budi sudah menyampaikan harga. Sekarang lakukan pembayaran."
+        ],
+        [
+          "Inggih, Pak. Menika artanipun. Matur nuwun.",
+          "Benar! Kamu membayar pesanan dan mengucapkan terima kasih dengan sopan."
+        ]
       ],
       answer: 2,
-      reply: ["Menika gedhangipun. Matur nuwun, Mbak.", "Ini pisangnya. Terima kasih, Mbak."],
-    },
-  ],
+      reply: [
+        "Inggih, sami-sami, Mbak.",
+        "Iya, sama-sama, Mbak."
+      ]
+    }
+  ]
 };
 
 const vrQuestions = [
   {
-    question: "Apa arti gedhang dalam bahasa Indonesia?",
-    options: ["Cabai", "Pisang", "Tomat"],
+    question: "Apa padanan kata gedhang dalam basa krama?",
+    options: ["Lombok", "Pisang", "Tomat"],
     answer: 1,
-    explanation: "Gedhang berarti pisang. Kamu memakai kata ini saat memesan di kios Pak Budi.",
+    explanation:
+      "Gedhang merupakan bentuk ngoko, sedangkan pisang merupakan bentuk krama."
   },
   {
-    question: "Kata mana yang berarti membeli dalam ragam krama?",
-    options: ["Tumbas", "Pinten", "Lombok"],
+    question: "Apa bahasa krama dari kata tuku?",
+    options: ["Tumbas", "Pinten", "Nyuwun"],
     answer: 0,
-    explanation: "Tumbas berarti membeli dalam krama. Bentuk ngokonya adalah tuku.",
+    explanation:
+      "Tuku berarti membeli dalam basa ngoko. Bentuk kramanya adalah tumbas."
   },
   {
-    question: "Apa padanan telu dalam ragam krama?",
-    options: ["Telu", "Pinten", "Tiga"],
+    question: "Apa padanan kata telu dalam basa krama?",
+    options: ["Telu", "Kalih", "Tiga"],
     answer: 2,
-    explanation: "Telu adalah bentuk ngoko dan tiga adalah bentuk krama untuk angka 3.",
+    explanation:
+      "Telu merupakan bentuk ngoko dan tiga merupakan bentuk krama untuk angka tiga."
   },
   {
-    question: "Apa yang kamu ucapkan untuk menanyakan total harga?",
-    options: ["Matur nuwun.", "Pinten reginipun sedaya?", "Badhe tumbas menapa?"],
+    question: "Bagaimana menanyakan total harga menggunakan basa krama?",
+    options: [
+      "Pira regane kabeh?",
+      "Pinten reginipun sedaya?",
+      "Badhe tumbas menapa?"
+    ],
     answer: 1,
-    explanation: "Pinten berarti berapa, reginipun berarti harganya, dan sedaya berarti semua.",
+    explanation:
+      "Pinten reginipun sedaya berarti berapa harga semuanya dalam basa krama."
   },
   {
-    question: "Bagaimana kamu mengucapkan terima kasih setelah membayar?",
-    options: ["Menika artanipun.", "Sugeng enjang.", "Matur nuwun."],
+    question: "Bagaimana membayar pesanan dengan sopan?",
+    options: [
+      "Iki dhuwite.",
+      "Pinten reginipun?",
+      "Menika artanipun. Matur nuwun."
+    ],
     answer: 2,
-    explanation: "Matur nuwun berarti terima kasih dan dipakai untuk menutup transaksi dengan sopan.",
-  },
+    explanation:
+      "Menika artanipun berarti ini uangnya, sedangkan matur nuwun berarti terima kasih."
+  }
 ];

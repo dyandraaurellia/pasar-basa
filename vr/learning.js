@@ -28,13 +28,18 @@
   const items = {
     cabai: { label: "Cabai", term: "lombok", seller: "bu-sari", quantity: 1 },
     tomat: { label: "Tomat", term: "tomat", seller: "bu-sari", quantity: 1 },
-    pisang: { label: "3 buah pisang", term: "gedhang", seller: "pak-budi", quantity: 3 },
+    pisang: { label: "3 buah pisang", term: "pisang", seller: "pak-budi", quantity: 3 },
   };
   const itemIds = Object.keys(items);
 
   const sellers = {
     "bu-sari": { scene: "kios-sayur", pitch: -4.58, yaw: -0.80, id: "bu-sari", seller: "Bu Sari", scenario: "beli-cabai" },
     "pak-budi": { scene: "kios-buah", pitch: -19.11, yaw: 15.12, id: "pak-budi", seller: "Pak Budi", scenario: "beli-pisang" },
+  };
+
+  const practicedVocabulary = {
+    "bu-sari": ["sugeng enjing", "tumbas", "lombok", "tomat", "ugi", "pinten reginipun sedaya", "menika artanipun", "matur nuwun"],
+    "pak-budi": ["sugeng enjing", "tumbas", "pisang", "tiga", "nyuwun dipunbungkus", "menika artanipun", "matur nuwun"],
   };
 
   const spots = [
@@ -53,18 +58,18 @@
       use: "Pakai lombok saat memesan cabai kepada Bu Sari.",
     },
     tomat: {
-      sentence: "Pinten reginipun tomat?",
-      meaning: "Berapa harga tomat?",
-      words: [["Pinten", "Berapa"], ["Reginipun", "Harganya"], ["Tomat", "Tomat"]],
-      ngoko: "Pira regane tomat?",
-      use: "Tambahkan tomat ke pesanan Bu Sari. Pinten reginipun dipakai untuk menanyakan harga.",
+      sentence: "Kula badhe tumbas tomat ugi, Bu.",
+      meaning: "Saya ingin membeli tomat juga, Bu.",
+      words: [["Tomat", "Tomat"], ["Uga", "Juga (ngoko)"], ["Ugi", "Juga (krama)"], ["Tumbas", "Membeli"]],
+      ngoko: "Aku arep tuku tomat uga, Bu.",
+      use: "Gunakan ugi untuk menambahkan tomat. Tanyakan Pinten reginipun sedaya? untuk mengetahui total harga.",
     },
     pisang: {
-      sentence: "Kula badhe tumbas gedhang tiga.",
+      sentence: "Kula badhe tumbas pisang tiga.",
       meaning: "Saya ingin membeli tiga pisang.",
-      words: [["Gedhang", "Pisang"], ["Telu", "Tiga (ngoko)"], ["Tiga", "Tiga (krama)"], ["Tumbas", "Membeli"]],
+      words: [["Gedhang", "Pisang (ngoko)"], ["Pisang", "Pisang (krama)"], ["Telu", "Tiga (ngoko)"], ["Tiga", "Tiga (krama)"], ["Tumbas", "Membeli"]],
       ngoko: "Aku arep tuku gedhang telu.",
-      use: "Pakai gedhang dan angka tiga saat memesan pisang kepada Pak Budi.",
+      use: "Gunakan pisang dan tiga dalam basa krama saat memesan kepada Pak Budi.",
     },
   };
 
@@ -170,6 +175,7 @@
         '<p class="vr-story-kicker">Misi Belanja <span lang="jv">ing</span> Pasar Basa</p>' +
         '<h1 id="vr-story-title" tabindex="-1">Briefing misi</h1>' +
         '<p>Kenali nama barang, lalu praktikkan bahasa Jawa krama untuk memesan, menanyakan harga, dan membayar.</p>' +
+        '<p class="vr-ar-note">Materi bahasa Jawa masih berupa draf dan menunggu validasi.</p>' +
         '<div class="vr-briefing-grid">' +
           '<section><h2>Daftar belanja</h2>' + shoppingList() + '</section>' +
           '<section><h2>Cara menjelajahi pasar</h2>' +
@@ -260,8 +266,10 @@
       '<div class="vr-actions"><button class="vr-btn vr-action" id="pb-learned" type="button"' + (learned ? " disabled" : "") +
       '>Sudah Dipelajari</button><button class="vr-btn vr-secondary" id="vr-practice" type="button">Praktik Bersama Penjual</button></div>', "vocab");
 
-    byId("vr-panel-title").textContent = vocab.jawa;
-    panelContent.querySelector(".vr-vocab-meaning").textContent = vocab.indonesia;
+    byId("vr-panel-title").textContent = items[id].term;
+    panelContent.querySelector(".vr-vocab-meaning").textContent = id === "pisang"
+      ? "Gedhang (ngoko) · pisang (krama)"
+      : vocab.indonesia;
     byId("vr-pronunciation").onclick = () => audio.play(id);
     byId("pb-learned").onclick = (event) => {
       if (mission.learned.includes(id)) return;
@@ -310,7 +318,10 @@
     speech.innerHTML = '<div class="pb-seller" lang="jv">' + turn.line + '</div><div class="pb-arti">' + turn.translation + "</div>";
     glossary.open = false;
     glossary.parentElement.scrollTop = 0;
-    byId("vr-glossary-words").innerHTML = wordRows(turn.words);
+    const words = spot.id === "pak-budi" && transaction.turn === 0
+      ? [...turn.words, ["Gedhang", "Pisang (ngoko)"]]
+      : turn.words;
+    byId("vr-glossary-words").innerHTML = wordRows(words);
     renderResponses(session, focusTarget);
   }
 
@@ -560,7 +571,12 @@
     const correct = mission.attempts.filter((attempt) => attempt.correct).length;
     const completed = Object.values(mission.transactions).filter((transaction) => transaction.completed).length;
     const learned = itemIds.filter((id) => mission.learned.includes(id))
-      .map((id) => '<span lang="jv">' + items[id].term + '</span>').join(", ") || "Belum ada materi yang ditandai.";
+      .map((id) => id === "pisang"
+        ? '<span lang="jv">gedhang</span> (ngoko) / <span lang="jv">pisang</span> (krama)'
+        : '<span lang="jv">' + items[id].term + '</span>').join(", ") || "Belum ada materi yang ditandai.";
+    const practiced = new Set(Object.keys(practicedVocabulary)
+      .filter((id) => mission.transactions[id].completed)
+      .flatMap((id) => practicedVocabulary[id]));
     showStory('<div class="vr-story-grid vr-result"><div class="vr-story-copy">' +
       '<p class="vr-story-kicker">Misi Belanja <span lang="jv">ing</span> Pasar Basa</p>' +
       '<h1 id="vr-story-title" tabindex="-1">Misi Rampung</h1>' +
@@ -569,7 +585,8 @@
       '<dl class="vr-result-details">' +
         '<div><dt>Transaksi</dt><dd>Bu Sari dan Pak Budi selesai</dd></div>' +
         '<div><dt>Percakapan selesai</dt><dd>' + completed + '</dd></div>' +
-        '<div><dt>Kosakata dipelajari</dt><dd>' + learned + '</dd></div>' +
+        '<div><dt>Materi hotspot dipelajari</dt><dd>' + learned + '</dd></div>' +
+        '<div><dt>Kosakata dipraktikkan lewat dialog</dt><dd lang="jv">' + [...practiced].join(", ") + '</dd></div>' +
         '<div><dt>Jawaban latihan</dt><dd>' + correct + ' benar · ' + (mission.attempts.length - correct) + ' salah</dd></div>' +
       '</dl><div class="vr-actions">' +
         '<button class="vr-btn vr-action" id="pb-reset" type="button">Ulangi Misi</button>' +

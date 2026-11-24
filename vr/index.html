@@ -1,87 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Misi Belanja ing Pasar Basa</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css">
-  <link rel="stylesheet" href="vr.css">
-</head>
-<body class="vr-page">
-  <main id="panorama" aria-label="Panorama pasar 360 derajat">
-    <header id="vr-topbar">
-      <div class="vr-place">
-        <h1>Pasar Basa</h1>
-        <span id="vr-location" aria-live="polite">Pintu Masuk</span>
-      </div>
-      <nav class="vr-navigation" aria-label="Navigasi tur">
-        <button class="vr-btn" id="btn-back" type="button" disabled>← Kembali</button>
-        <a class="vr-btn" href="../index.html">Beranda</a>
-      </nav>
-    </header>
-    <button class="vr-mission-bar" id="mission-bar" type="button" aria-haspopup="dialog">
-      <span>Daftar belanja</span>
-      <strong id="vr-mission-count">0/3</strong>
-      <progress id="vr-mission-meter" value="0" max="3" aria-label="Barang sudah dibeli"></progress>
-      <span id="vr-next-goal"></span>
-    </button>
-  </main>
-
-  <dialog id="vr-conversation" aria-labelledby="vr-seller-name">
-    <header class="vr-conversation-header">
-      <div class="vr-place">
-        <p class="vr-brand">Pasar Basa</p>
-        <span id="vr-conversation-location"></span>
-      </div>
-      <span class="vr-turn" id="vr-turn" aria-live="polite"></span>
-      <button class="vr-btn vr-exit" id="vr-end-conversation" type="button" autofocus>
-        <span aria-hidden="true">×</span> Tutup <span class="vr-exit-label">percakapan</span>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Misi Belanja ing Pasar Basa</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css" />
+    <link rel="stylesheet" href="vr.css" />
+  </head>
+  <body class="vr-page">
+    <main id="panorama" aria-label="Panorama pasar 360 derajat">
+      <header id="vr-topbar">
+        <div class="vr-place">
+          <h1>Pasar Basa</h1>
+          <span id="vr-location" aria-live="polite">Pintu Masuk</span>
+        </div>
+        <nav class="vr-navigation" aria-label="Navigasi tur">
+          <button class="vr-btn" id="btn-back" type="button" disabled>← Kembali</button>
+          <a class="vr-btn" href="../index.html">Beranda</a>
+        </nav>
+      </header>
+      <button class="vr-mission-bar" id="mission-bar" type="button" aria-haspopup="dialog">
+        <span>Daftar belanja</span>
+        <strong id="vr-mission-count">0/3</strong>
+        <progress id="vr-mission-meter" value="0" max="3" aria-label="Barang sudah dibeli"></progress>
+        <span id="vr-next-goal"></span>
       </button>
-    </header>
+    </main>
 
-    <div class="vr-speech">
-      <div class="vr-bubble">
-        <h2 id="vr-seller-name"></h2>
-        <div id="vr-seller-line"></div>
+    <dialog id="vr-conversation" aria-labelledby="vr-seller-name">
+      <header class="vr-conversation-header">
+        <div class="vr-place">
+          <p class="vr-brand">Pasar Basa</p>
+          <span id="vr-conversation-location"></span>
+        </div>
+        <span class="vr-turn" id="vr-turn" aria-live="polite"></span>
+        <button class="vr-btn vr-exit" id="vr-end-conversation" type="button" autofocus><span aria-hidden="true">×</span> Tutup <span class="vr-exit-label">percakapan</span></button>
+      </header>
+
+      <div class="vr-speech">
+        <div class="vr-bubble">
+          <h2 id="vr-seller-name"></h2>
+          <div id="vr-seller-line"></div>
+        </div>
+        <details class="vr-glossary" id="vr-glossary">
+          <summary>Bantuan kosakata</summary>
+          <dl id="vr-glossary-words"></dl>
+        </details>
       </div>
-      <details class="vr-glossary" id="vr-glossary">
-        <summary>Bantuan kosakata</summary>
-        <dl id="vr-glossary-words"></dl>
-      </details>
-    </div>
 
-    <img class="vr-seller-art" id="vr-seller-art" width="600" height="800" alt="">
+      <img class="vr-seller-art" id="vr-seller-art" width="600" height="800" alt="" />
 
-    <section class="vr-responses" aria-labelledby="vr-response-title">
-      <h2 id="vr-response-title">Jawaban Nadia</h2>
-      <div id="vr-response-slot"></div>
-    </section>
+      <section class="vr-responses" aria-labelledby="vr-response-title">
+        <h2 id="vr-response-title">Jawaban Nadia</h2>
+        <div id="vr-response-slot"></div>
+      </section>
 
-    <footer class="vr-transaction">
-      <div>
-        <span>Tujuan giliran</span>
-        <strong id="vr-transaction-goal"></strong>
-      </div>
-      <span id="vr-transaction-progress"></span>
-    </footer>
-  </dialog>
+      <footer class="vr-transaction">
+        <div>
+          <span>Tujuan giliran</span>
+          <strong id="vr-transaction-goal"></strong>
+        </div>
+        <span id="vr-transaction-progress"></span>
+      </footer>
+    </dialog>
 
-  <dialog id="vr-story" aria-labelledby="vr-story-title"></dialog>
+    <dialog id="vr-story" aria-labelledby="vr-story-title"></dialog>
 
-  <dialog id="vr-panel" aria-labelledby="vr-panel-title">
-    <button class="vr-btn vr-panel-close" id="vr-close-panel" type="button" aria-label="Tutup panel" autofocus>×</button>
-    <div id="vr-panel-content"></div>
-  </dialog>
+    <dialog id="vr-panel" aria-labelledby="vr-panel-title">
+      <button class="vr-btn vr-panel-close" id="vr-close-panel" type="button" aria-label="Tutup panel" autofocus>×</button>
+      <div id="vr-panel-content"></div>
+    </dialog>
 
-  <script>window.BASE = '../';</script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
-  <script src="../shared/data.js"></script>
-  <script src="../shared/audio.js"></script>
-  <script src="../shared/progress.js"></script>
-  <script src="../shared/dialog-ui.js"></script>
-  <script src="vr.js"></script>
-  <script src="mission-content.js"></script>
-  <script src="learning.js"></script>
-</body>
+    <script>
+      window.BASE = "../";
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
+    <script src="../shared/data.js"></script>
+    <script src="../shared/audio.js"></script>
+    <script src="../shared/progress.js"></script>
+    <script src="../shared/dialog-ui.js"></script>
+    <script src="vr.js"></script>
+    <script src="mission-content.js"></script>
+    <script src="learning.js"></script>
+  </body>
 </html>
