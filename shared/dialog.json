@@ -1,13 +1,46 @@
-[{
-  "id": "beli-cabai",
-  "penjual": "Sugeng enjang, Mbak. Pados menapa?",
-  "arti": "Selamat pagi, Mbak. Cari apa?",
-  "pilihan": [
-    { "teks": "Sugeng enjang, Bu. Kula badhe tumbas lombok.", "benar": true,
-      "umpanBalik": "Tepat! Sopan, memakai krama untuk penjual." },
-    { "teks": "Heh, aku arep tuku lombok.", "benar": false,
-      "umpanBalik": "Kurang sesuai: ngoko terlalu kasual untuk penjual yang lebih tua." },
-    { "teks": "Lombok pira?", "benar": false,
-      "umpanBalik": "Dipakai nanti saat menawar, tapi belum menyapa dulu." }
-  ]
-}]
+[
+  {
+    "id": "beli-cabai",
+    "penjual": "Sugeng enjang, Mbak. Pados menapa?",
+    "arti": "Selamat pagi, Mbak. Cari apa?",
+    "pilihan": [
+      {
+        "teks": "Sugeng enjang, Bu. Kula badhe tumbas lombok.",
+        "benar": true,
+        "umpanBalik": "Tepat! Tumbas berarti membeli, sedangkan lombok berarti cabai."
+      },
+      {
+        "teks": "Heh, aku arep tuku lombok.",
+        "benar": false,
+        "umpanBalik": "Artinya sesuai, tetapi ragam ngoko kurang sesuai untuk konteks latihan berbicara sopan kepada penjual yang lebih tua."
+      },
+      {
+        "teks": "Lombok pira?",
+        "benar": false,
+        "umpanBalik": "Kalimat ini digunakan untuk menanyakan harga. Cobalah menyampaikan barang yang ingin dibeli terlebih dahulu."
+      }
+    ]
+  },
+  {
+    "id": "beli-pisang",
+    "penjual": "Badhe tumbas menapa, Mbak?",
+    "arti": "Ingin membeli apa, Mbak?",
+    "pilihan": [
+      {
+        "teks": "Kula badhe tumbas lombok.",
+        "benar": false,
+        "umpanBalik": "Lombok berarti cabai. Misi kamu adalah membeli tiga pisang."
+      },
+      {
+        "teks": "Kula badhe tumbas gedhang tiga.",
+        "benar": true,
+        "umpanBalik": "Tepat! Gedhang berarti pisang, tumbas berarti membeli, dan tiga merupakan bentuk angka tiga dalam krama."
+      },
+      {
+        "teks": "Aku arep tuku gedhang telu.",
+        "benar": false,
+        "umpanBalik": "Artinya sudah benar, tetapi latihan ini meminta jawaban dengan ragam krama."
+      }
+    ]
+  }
+]

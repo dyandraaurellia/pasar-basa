@@ -1,16 +1,48 @@
-// KONTRAK — pemilik: Maulidya. Audio hanya diputar dari event klik (aturan browser).
+// Pemilik: Maulidya
+// Modul audio bersama VR dan AR
+
 window.PasarBasa = window.PasarBasa || {};
+
 (function () {
-  let enabled = true, cur = null;
+  let enabled = true;
+  let cur = null;
+
   PasarBasa.audio = {
     play(id) {
       if (!enabled) return;
-      const v = PasarBasa.data.getVocab(id); if (!v) return;
-      if (cur) cur.pause();
-      cur = new Audio((window.BASE || '') + v.audio);
-      cur.play().catch(() => {});
+
+      const vocab = PasarBasa.data.getVocab(id);
+
+      if (!vocab || !vocab.audio) {
+        console.warn("Audio tidak ditemukan:", id);
+        return;
+      }
+
+      // Hentikan audio sebelumnya
+      if (cur) {
+        cur.pause();
+        cur.currentTime = 0;
+      }
+
+      const path = (window.BASE || "") + vocab.audio;
+
+      cur = new Audio(path);
+
+      cur.play().catch((error) => {
+        console.error("Gagal memutar audio:", path, error);
+      });
     },
-    setEnabled(b) { enabled = !!b; if (!b && cur) cur.pause(); },
-    isEnabled() { return enabled; }
+
+    setEnabled(value) {
+      enabled = Boolean(value);
+
+      if (!enabled && cur) {
+        cur.pause();
+      }
+    },
+
+    isEnabled() {
+      return enabled;
+    },
   };
 })();

@@ -1,25 +1,82 @@
-// KONTRAK — pemilik: Maulidya. State bersama VR & AR via localStorage (origin sama).
+// Pemilik: Maulidya
+// Progres bersama VR dan AR
+
 window.PasarBasa = window.PasarBasa || {};
+
 (function () {
-  const KEY = 'pasarbasa:progress';
-  const EMPTY = () => ({ done: [], dialogResults: [] });
-  const read = () => { try { return JSON.parse(localStorage.getItem(KEY)) || EMPTY(); } catch (e) { return EMPTY(); } };
-  const write = s => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} };
-  const REQUIRED = ['vocab:cabai', 'vocab:tomat', 'vocab:pisang', 'dialog:beli-cabai'];
+  const KEY = "pasarbasa:progress";
+
+  const REQUIRED = ["vocab:cabai", "vocab:tomat", "vocab:pisang", "dialog:beli-cabai"];
+
+  const EMPTY = () => ({
+    done: [],
+    dialogResults: [],
+  });
+
+  function read() {
+    try {
+      const data = JSON.parse(localStorage.getItem(KEY));
+
+      if (!data || !Array.isArray(data.done) || !Array.isArray(data.dialogResults)) {
+        return EMPTY();
+      }
+
+      return data;
+    } catch (error) {
+      console.warn("Gagal membaca progres:", error);
+      return EMPTY();
+    }
+  }
+
+  function write(state) {
+    try {
+      localStorage.setItem(KEY, JSON.stringify(state));
+    } catch (error) {
+      console.error("Gagal menyimpan progres:", error);
+    }
+  }
+
   PasarBasa.progress = {
     REQUIRED,
-    mark(a) { const s = read(); if (!s.done.includes(a)) s.done.push(a); write(s); },
-    recordDialog(r) { const s = read(); s.dialogResults.push(r); write(s); },
+
+    mark(activityId) {
+      const state = read();
+
+      if (!state.done.includes(activityId)) {
+        state.done.push(activityId);
+      }
+
+      write(state);
+    },
+
+    recordDialog(result) {
+      const state = read();
+
+      state.dialogResults.push(result);
+
+      write(state);
+    },
+
     get: read,
-    reset() { write(EMPTY()); },
+
+    reset() {
+      write(EMPTY());
+    },
+
     summary() {
-      const s = read();
-      const c = s.dialogResults.filter(r => r.benar).length;
+      const state = read();
+
+      const correct = state.dialogResults.filter((result) => result.benar).length;
+
       return {
         total: REQUIRED.length,
-        done: REQUIRED.filter(a => s.done.includes(a)).length,
-        correct: c, wrong: s.dialogResults.length - c
+
+        done: REQUIRED.filter((activity) => state.done.includes(activity)).length,
+
+        correct,
+
+        wrong: state.dialogResults.length - correct,
       };
-    }
+    },
   };
 })();
