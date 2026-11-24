@@ -1,356 +1,630 @@
 // Pemilik: Maulidya — hotspot kosakata, dialog, misi, hasil (KF-VR-07..16).
-(async () => {
-  await PasarBasa.data.loadVocab();
-  const v = PasarBasaVR.viewer;
-  const panel = document.getElementById("vr-panel");
-  const bar = document.getElementById("mission-bar");
+(() => {
+  const { viewer } = PasarBasaVR;
+  const { data, audio, progress } = PasarBasa;
+  const byId = (id) => document.getElementById(id);
+  const panorama = byId("panorama");
+  const panel = byId("vr-panel");
+  const panelContent = byId("vr-panel-content");
+  const story = byId("vr-story");
+  const conversation = byId("vr-conversation");
+  const speech = byId("vr-seller-line");
+  const art = byId("vr-seller-art");
+  const responseSlot = byId("vr-response-slot");
+  const glossary = byId("vr-glossary");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const missionKey = "pasarbasa:vr-mission";
+  // Tambahkan ID di sini bersama berkas MP3 yang dirujuk di kosakata.json.
+  const availablePronunciations = new Set();
+  let activeConversation = null;
 
-  // Titik dari Dyan (ganti sesuai foto). type 'penjual' -> dialog.
+  const locations = {
+    pintu: "Pintu Masuk",
+    lorong: "Lorong Pasar",
+    "kios-sayur": "Kios Sayur",
+    "kios-buah": "Kios Buah",
+  };
+
+  const items = {
+    cabai: { label: "Cabai", term: "lombok", seller: "bu-sari", quantity: 1 },
+    tomat: { label: "Tomat", term: "tomat", seller: "bu-sari", quantity: 1 },
+    pisang: { label: "3 buah pisang", term: "gedhang", seller: "pak-budi", quantity: 3 },
+  };
+  const itemIds = Object.keys(items);
+
+  const sellers = {
+    "bu-sari": { scene: "kios-sayur", pitch: -4.58, yaw: -0.80, id: "bu-sari", seller: "Bu Sari", scenario: "beli-cabai" },
+    "pak-budi": { scene: "kios-buah", pitch: -19.11, yaw: 15.12, id: "pak-budi", seller: "Pak Budi", scenario: "beli-pisang" },
+  };
 
   const spots = [
-    {
-      scene: "kios-sayur",
-      pitch: -23.12,
-      yaw: -45.18,
-      id: "cabai",
-      icon: "🌶️",
-      label: "Belajar Cabai",
-    },
-    {
-      scene: "kios-sayur",
-      pitch: -29.55,
-      yaw: -28.77,
-      id: "tomat",
-      icon: "🍅",
-      label: "Belajar Tomat",
-    },
-    {
-      scene: "kios-buah",
-      pitch: -21.83,
-      yaw: 39.76,
-      id: "pisang",
-      icon: "🍌",
-      label: "Belajar Pisang",
-    },
-    {
-      scene: "kios-sayur",
-      pitch: -4.58,
-      yaw: -0.8,
-      id: "bu-sari",
-      icon: "💬",
-      label: "Bicara dengan Bu Sari",
-      penjual: true,
-      scenario: "beli-cabai",
-    },
-    {
-      scene: "kios-buah",
-      pitch: -19.11,
-      yaw: 15.12,
-      id: "pak-budi",
-      icon: "💬",
-      label: "Bicara dengan Pak Budi",
-      penjual: true,
-      scenario: "beli-pisang",
-    },
+    { scene: "kios-sayur", pitch: -23.12, yaw: -45.18, id: "cabai", icon: "🌶️", label: "Belajar cabai" },
+    { scene: "kios-sayur", pitch: -29.55, yaw: -28.77, id: "tomat", icon: "🍅", label: "Belajar tomat" },
+    { scene: "kios-buah", pitch: -21.83, yaw: 39.76, id: "pisang", icon: "🍌", label: "Belajar pisang" },
+    ...Object.values(sellers).map((spot) => ({ ...spot, icon: "💬", label: "Bicara dengan " + spot.seller })),
   ];
-
-  spots.forEach((s) =>
-    v.addHotSpot(
-      {
-        id: s.id,
-        pitch: s.pitch,
-        yaw: s.yaw,
-        type: "info",
-        cssClass: "pb-hotspot",
-
-        createTooltipFunc: (div) => {
-          div.textContent = s.icon;
-          div.title = s.label;
-          div.setAttribute("aria-label", s.label);
-        },
-
-        clickHandlerFunc: () => {
-          if (s.penjual) {
-            openDialog(s.scenario);
-          } else {
-            openVocab(s.id);
-          }
-        },
-      },
-      s.scene,
-    ),
-  );
-
-  spots.forEach((s) =>
-    v.addHotSpot(
-      {
-        id: s.id,
-        pitch: s.pitch,
-        yaw: s.yaw,
-        type: "info",
-        cssClass: "pb-hotspot",
-
-        createTooltipFunc: (div) => {
-          div.textContent = s.icon;
-          div.title = s.label;
-          div.setAttribute("aria-label", s.label);
-        },
-
-        clickHandlerFunc: () => {
-          if (s.penjual) {
-            openDialog(s.scenario);
-          } else {
-            openVocab(s.id);
-          }
-        },
-      },
-      s.scene,
-    ),
-  );
-
-  spots.forEach((s) =>
-    v.addHotSpot(
-      {
-        pitch: s.pitch,
-        yaw: s.yaw,
-        type: "custom",
-        createTooltipFunc: (div) => {
-          div.className = "pb-hotspot";
-          div.textContent = s.icon;
-        },
-        clickHandlerFunc: () => (s.penjual ? openDialog() : openVocab(s.id)),
-      },
-      s.scene,
-    ),
-  );
-
-  function closeBtn() {
-    return '<button class="close">✕</button>';
-  }
-  function show(html) {
-    panel.innerHTML = html;
-    panel.hidden = false;
-    const c = panel.querySelector(".close");
-    if (c) c.onclick = () => (panel.hidden = true);
-  }
-
-  // DRAFT materi bahasa Jawa.
-  // Perlu diverifikasi oleh penutur sebelum presentasi.
 
   const lessons = {
     cabai: {
-      icon: "🌶️",
       sentence: "Kula badhe tumbas lombok.",
       meaning: "Saya ingin membeli cabai.",
-      words: [
-        ["Kula", "Saya"],
-        ["Badhe", "Ingin"],
-        ["Tumbas", "Membeli"],
-        ["Lombok", "Cabai"],
-      ],
+      words: [["Kula", "Saya"], ["Badhe", "Ingin"], ["Tumbas", "Membeli"], ["Lombok", "Cabai"]],
       ngoko: "Aku arep tuku lombok.",
-      krama: "Kula badhe tumbas lombok.",
+      use: "Pakai lombok saat memesan cabai kepada Bu Sari.",
     },
-
     tomat: {
-      icon: "🍅",
       sentence: "Pinten reginipun tomat?",
       meaning: "Berapa harga tomat?",
-      words: [
-        ["Pinten", "Berapa"],
-        ["Reginipun", "Harganya"],
-        ["Tomat", "Tomat"],
-      ],
+      words: [["Pinten", "Berapa"], ["Reginipun", "Harganya"], ["Tomat", "Tomat"]],
       ngoko: "Pira regane tomat?",
-      krama: "Pinten reginipun tomat?",
+      use: "Tambahkan tomat ke pesanan Bu Sari. Pinten reginipun dipakai untuk menanyakan harga.",
     },
-
     pisang: {
-      icon: "🍌",
       sentence: "Kula badhe tumbas gedhang tiga.",
       meaning: "Saya ingin membeli tiga pisang.",
-      words: [
-        ["Gedhang", "Pisang"],
-        ["Telu", "Tiga (ngoko)"],
-        ["Tiga", "Tiga (krama)"],
-        ["Tumbas", "Membeli"],
-      ],
+      words: [["Gedhang", "Pisang"], ["Telu", "Tiga (ngoko)"], ["Tiga", "Tiga (krama)"], ["Tumbas", "Membeli"]],
       ngoko: "Aku arep tuku gedhang telu.",
-      krama: "Kula badhe tumbas gedhang tiga.",
+      use: "Pakai gedhang dan angka tiga saat memesan pisang kepada Pak Budi.",
     },
   };
 
-  function openVocab(id) {
-    const d = PasarBasa.data.getVocab(id);
-    const lesson = lessons[id];
-
-    if (!d || !lesson) return;
-
-    const wordList = lesson.words
-      .map(
-        (word) => `
-        <div class="pb-word">
-            <b>${word[0]}</b>
-            <span>${word[1]}</span>
-        </div>
-    `,
-      )
-      .join("");
-
-    show(
-      closeBtn() +
-        `
-        <div class="pb-lesson">
-
-            <small>BELAJAR DI PASAR</small>
-
-            <h3>${lesson.icon} ${d.jawa}</h3>
-
-            <p>Bahasa Indonesia: ${d.indonesia}</p>
-
-            <button class="act" id="pb-audio">
-                🔊 Dengarkan ${d.jawa}
-            </button>
-
-            <hr>
-
-            <h4>Contoh Percakapan</h4>
-
-            <div class="pb-example">
-                <b>${lesson.sentence}</b>
-                <p>${lesson.meaning}</p>
-            </div>
-
-            <h4>Pahami Kata-katanya</h4>
-
-            ${wordList}
-
-            <h4>Ngoko dan Krama</h4>
-
-            <p>
-                <b>Ngoko:</b><br>
-                ${lesson.ngoko}
-            </p>
-
-            <p>
-                <b>Krama:</b><br>
-                ${lesson.krama}
-            </p>
-
-            <button class="act" id="pb-learned">
-                ✓ Sudah Dipelajari
-            </button>
-
-        </div>
-    `,
-    );
-
-    document.getElementById("pb-audio").onclick = () => {
-      PasarBasa.audio.play(id);
-    };
-
-    document.getElementById("pb-learned").onclick = () => {
-      PasarBasa.progress.mark("vocab:" + id);
-      updateBar();
-      panel.hidden = true;
+  function freshMission() {
+    return {
+      version: 1,
+      introSeen: false,
+      briefingDone: false,
+      arOpened: false,
+      scene: "pintu",
+      learned: [],
+      transactions: {
+        "bu-sari": { turn: 0, selected: null, completed: false },
+        "pak-budi": { turn: 0, selected: null, quantity: 1, completed: false },
+      },
+      purchased: {},
+      attempts: [],
+      quiz: { started: false, index: 0, answers: [] },
+      completed: false,
     };
   }
 
-  async function openDialog(scenarioId) {
-    const isFruit = scenarioId === "beli-pisang";
-
-    const seller = isFruit ? "Pak Budi" : "Bu Sari";
-
-    const mission = isFruit ? "Belilah tiga pisang menggunakan bahasa Jawa yang sopan." : "Belilah cabai menggunakan bahasa Jawa yang sopan.";
-
-    show(
-      closeBtn() +
-        `
-        <div class="pb-conversation">
-
-            <small>SIMULASI PERCAKAPAN</small>
-
-            <h3>💬 ${seller}</h3>
-
-            <div class="pb-example">
-                <b>Misi Nadia</b>
-                <p>${mission}</p>
-            </div>
-
-            <div id="pb-dlg"></div>
-
-        </div>
-    `,
-    );
-
-    const target = document.getElementById("pb-dlg");
-
+  function readMission() {
     try {
-      await PasarBasa.dialog.mount(target, scenarioId, {
-        onFinish: () => {
-          updateBar();
+      const saved = JSON.parse(localStorage.getItem(missionKey));
+      if (saved?.version === 1) return saved;
+    } catch {
+      // Tur dapat dijalankan di memori saat penyimpanan tidak tersedia.
+    }
+    return freshMission();
+  }
 
-          const s = PasarBasa.progress.summary();
+  let mission = readMission();
 
-          if (s.done === s.total) {
-            showSummary();
-          } else {
-            show(
-              closeBtn() +
-                `
-                            <h3>✓ Percakapan Selesai!</h3>
-                            <p>Bagus! Kamu berhasil
-                            menjawab percakapan dengan
-                            ${seller}.</p>
-
-                            <p>Progres misi:
-                            ${s.done}/${s.total}</p>
-
-                            <button class="act"
-                                id="pb-continue">
-                                Lanjut Eksplorasi →
-                            </button>
-                        `,
-            );
-
-            document.getElementById("pb-continue").onclick = () => {
-              panel.hidden = true;
-            };
-          }
-        },
-      });
-    } catch (error) {
-      console.error("Dialog gagal dimuat:", error);
-      target.textContent = "Percakapan gagal dimuat.";
+  function saveMission() {
+    try {
+      localStorage.setItem(missionKey, JSON.stringify(mission));
+    } catch {
+      // Progres sesi saat ini tetap dapat digunakan.
     }
   }
 
-  function showSummary() {
-    const s = PasarBasa.progress.summary();
-    show(
-      closeBtn() +
-        `<h3>Hasil Belajar</h3><p>Aktivitas selesai: <b>${s.done}/${s.total}</b><br>Jawaban benar: ${s.correct} · salah: ${s.wrong}</p>
-      <button class="act" id="pb-reset">↺ Ulangi Misi</button>`,
-    );
-    document.getElementById("pb-reset").onclick = () => {
-      PasarBasa.progress.reset();
+  function markShared(activity) {
+    if (!progress.get().done.includes(activity)) progress.mark(activity);
+  }
+
+  function wordRows(words) {
+    return words.map(([word, meaning]) => '<div><dt lang="jv">' + word + "</dt><dd>" + meaning + "</dd></div>").join("");
+  }
+
+  function buyingCount() {
+    return itemIds.filter((id) => mission.purchased[id] === items[id].quantity).length;
+  }
+
+  function canStartQuiz() {
+    return buyingCount() === itemIds.length;
+  }
+
+  function canShowResults() {
+    return mission.completed && canStartQuiz() && mission.quiz.index === vrQuestions.length;
+  }
+
+  function shoppingList(showLearned = false) {
+    return '<ul class="vr-activity-list">' + itemIds.map((id) => {
+      const item = items[id];
+      const bought = mission.purchased[id] === item.quantity;
+      const studyStatus = mission.learned.includes(id) ? "Sudah dipelajari" : "Belum dipelajari";
+      return '<li><span>' + item.label + (showLearned ? '<small>' + studyStatus + '</small>' : '')
+        + '</span><strong data-complete="' + bought + '">' + (bought ? "Sudah dibeli" : "Belum dibeli") + "</strong></li>";
+    }).join("") + "</ul>";
+  }
+
+  function showStory(html, phase) {
+    story.dataset.phase = phase;
+    story.innerHTML = html;
+    if (!story.open) story.showModal();
+    byId("vr-story-title").focus({ preventScroll: true });
+    story.scrollTop = 0;
+  }
+
+  function showIntroduction() {
+    showStory(
+      '<div class="vr-story-grid">' +
+        '<div class="vr-story-copy">' +
+          '<p class="vr-story-kicker">Tugas belanja dari Ibu</p>' +
+          '<h1 id="vr-story-title" tabindex="-1">Misi Belanja <span lang="jv">ing</span> Pasar Basa</h1>' +
+          '<blockquote>“Nadia, tolong belikan Ibu cabai, tomat, dan tiga buah pisang di pasar, ya.”</blockquote>' +
+          '<div class="vr-actions"><button class="vr-btn vr-action" id="vr-start-adventure" type="button">Mulai Petualangan</button>' +
+          '<a class="vr-btn vr-secondary" href="../index.html">Kembali ke Beranda</a></div>' +
+        '</div>' +
+        '<img class="vr-nadia" src="../assets/nadia.webp" alt="" width="600" height="800">' +
+      '</div>', "intro");
+    byId("vr-start-adventure").onclick = () => {
+      mission.introSeen = true;
+      saveMission();
+      showBriefing();
+    };
+  }
+
+  function showBriefing() {
+    showStory(
+      '<div class="vr-briefing">' +
+        '<p class="vr-story-kicker">Misi Belanja <span lang="jv">ing</span> Pasar Basa</p>' +
+        '<h1 id="vr-story-title" tabindex="-1">Briefing misi</h1>' +
+        '<p>Kenali nama barang, lalu praktikkan bahasa Jawa krama untuk memesan, menanyakan harga, dan membayar.</p>' +
+        '<div class="vr-briefing-grid">' +
+          '<section><h2>Daftar belanja</h2>' + shoppingList() + '</section>' +
+          '<section><h2>Cara menjelajahi pasar</h2>' +
+            '<ul><li>Geser panorama untuk melihat sekeliling. Gunakan + dan − untuk zoom.</li>' +
+              '<li>Pilih panah untuk pindah lokasi atau gunakan tombol Kembali.</li>' +
+              '<li>Ikon barang membuka kosakata. Balon percakapan memulai transaksi dengan penjual.</li></ul></section>' +
+        '</div>' +
+        '<p class="vr-ar-note">Kartu AR membantu mengenalkan kata. AR terbuka di tab baru. Kamu juga bisa langsung berlatih di pasar VR.</p>' +
+        '<div class="vr-actions">' +
+          '<a class="vr-btn vr-secondary" id="vr-open-ar" href="../ar/index.html" target="_blank" rel="noopener">Pelajari Kosakata dengan AR</a>' +
+          '<button class="vr-btn vr-action" id="vr-enter-market" type="button">Langsung Masuk Pasar VR</button>' +
+        '</div>' +
+      '</div>', "briefing");
+    byId("vr-open-ar").onclick = () => {
+      mission.arOpened = true;
+      saveMission();
+    };
+    byId("vr-enter-market").onclick = () => {
+      mission.briefingDone = true;
+      saveMission();
+      story.close();
+      panorama.focus({ preventScroll: true });
+    };
+  }
+
+  spots.forEach((spot) => viewer.addHotSpot({
+    id: spot.id,
+    pitch: spot.pitch,
+    yaw: spot.yaw,
+    type: "info",
+    cssClass: "pb-hotspot",
+    createTooltipFunc: (container) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "vr-hotspot-button";
+      button.textContent = spot.icon;
+      button.title = spot.label;
+      button.setAttribute("aria-label", spot.label);
+      button.setAttribute("aria-haspopup", "dialog");
+      if (spot.seller) button.dataset.seller = spot.seller;
+      button.onclick = () => {
+        if (spot.seller) openConversation(spot, button);
+        else openVocab(spot.id);
+      };
+      container.append(button);
+    },
+  }, spot.scene));
+
+  function showPanel(html, kind = "mission") {
+    panel.dataset.kind = kind;
+    panelContent.innerHTML = html;
+    if (!panel.open) panel.showModal();
+    panel.scrollTop = 0;
+  }
+
+  async function openVocab(id) {
+    const lesson = lessons[id];
+    const seller = sellers[items[id].seller];
+    showPanel('<h2 id="vr-panel-title">Kosakata pasar</h2><p role="status">Memuat kosakata…</p>', "vocab");
+    const status = panel.querySelector('[role="status"]');
+    try {
+      await data.loadVocab();
+    } catch {
+      if (panel.open && status.isConnected) status.textContent = "Kosakata gagal dimuat. Tutup panel dan coba lagi.";
+      return;
+    }
+    if (!panel.open || !status.isConnected) return;
+    const vocab = data.getVocab(id);
+    if (!vocab) {
+      status.textContent = "Kosakata ini belum tersedia.";
+      return;
+    }
+
+    const learned = mission.learned.includes(id);
+    const hasAudio = Boolean(vocab.audio && availablePronunciations.has(id));
+    showPanel(
+      '<h2 id="vr-panel-title" lang="jv"></h2><p class="vr-vocab-meaning"></p>' +
+      '<p><strong>Daftar belanja:</strong> ' + items[id].label + ". " + lesson.use + '</p>' +
+      '<div class="vr-example"><strong lang="jv">' + lesson.sentence + "</strong><p>" + lesson.meaning + '</p></div>' +
+      '<h3>Arti kata</h3><dl class="vr-words">' + wordRows(lesson.words) + '</dl>' +
+      '<h3>Ngoko dan krama</h3><dl class="vr-registers">' +
+        '<div><dt>Ngoko</dt><dd lang="jv">' + lesson.ngoko + '</dd></div>' +
+        '<div><dt>Krama</dt><dd lang="jv">' + lesson.sentence + '</dd></div>' +
+      '</dl>' +
+      '<div class="vr-pronunciation"><button class="vr-btn vr-secondary" id="vr-pronunciation" type="button"' +
+        (hasAudio ? '' : ' disabled aria-describedby="vr-audio-note"') + '>Dengarkan pelafalan</button>' +
+        (hasAudio ? '' : '<span class="vr-audio-note" id="vr-audio-note">Rekaman belum tersedia.</span>') + '</div>' +
+      '<div class="vr-actions"><button class="vr-btn vr-action" id="pb-learned" type="button"' + (learned ? " disabled" : "") +
+      '>Sudah Dipelajari</button><button class="vr-btn vr-secondary" id="vr-practice" type="button">Praktik Bersama Penjual</button></div>', "vocab");
+
+    byId("vr-panel-title").textContent = vocab.jawa;
+    panelContent.querySelector(".vr-vocab-meaning").textContent = vocab.indonesia;
+    byId("vr-pronunciation").onclick = () => audio.play(id);
+    byId("pb-learned").onclick = (event) => {
+      if (mission.learned.includes(id)) return;
+      mission.learned.push(id);
+      saveMission();
+      markShared("vocab:" + id);
       updateBar();
-      panel.hidden = true;
+      event.currentTarget.disabled = true;
+      byId("vr-practice").focus();
+    };
+    byId("vr-practice").onclick = () => {
+      panel.close();
+      openConversation(seller, document.activeElement);
+    };
+  }
+
+  function openConversation(spot, trigger) {
+    if (activeConversation || !viewer.isLoaded() || viewer.getScene() !== spot.scene) return;
+    if (mission.transactions[spot.id].completed) {
+      showShoppingList();
+      return;
+    }
+    const session = { spot, trigger, restoreOrientation: viewer.isOrientationActive() };
+    activeConversation = session;
+
+    byId("vr-seller-name").textContent = spot.seller;
+    byId("vr-conversation-location").textContent = locations[spot.scene];
+    art.src = "../assets/" + spot.id + ".webp";
+    renderTurn(session);
+
+    conversation.showModal();
+    panorama.classList.add("vr-conversing");
+    if (session.restoreOrientation) viewer.stopOrientation();
+    viewer.stopMovement();
+    viewer.lookAt(spot.pitch, spot.yaw, undefined, reducedMotion.matches ? false : 520);
+  }
+
+  function renderTurn(session, focusTarget) {
+    const { spot } = session;
+    const transaction = mission.transactions[spot.id];
+    const turns = vrTransactions[spot.id];
+    const turn = turns[transaction.turn];
+    byId("vr-turn").textContent = "Giliran " + (transaction.turn + 1) + "/" + turns.length;
+    byId("vr-transaction-goal").textContent = turn.goal;
+    byId("vr-transaction-progress").textContent = "Belanja " + buyingCount() + "/" + itemIds.length;
+    speech.innerHTML = '<div class="pb-seller" lang="jv">' + turn.line + '</div><div class="pb-arti">' + turn.translation + "</div>";
+    glossary.open = false;
+    glossary.parentElement.scrollTop = 0;
+    byId("vr-glossary-words").innerHTML = wordRows(turn.words);
+    renderResponses(session, focusTarget);
+  }
+
+  function renderResponses(session, focusTarget) {
+    const { spot } = session;
+    const transaction = mission.transactions[spot.id];
+    const turnIndex = transaction.turn;
+    const turns = vrTransactions[spot.id];
+    const turn = turns[turnIndex];
+    const selected = transaction.selected;
+    const answered = selected !== null;
+    const correct = selected === (turn.quantity ?? turn.answer);
+    const lastTurn = turnIndex === turns.length - 1;
+    const feedback = answered ? (turn.quantity
+      ? (correct ? "Kamu memilih tiga pisang. Telu adalah ngoko dan tiga adalah krama."
+        : "Kamu memilih " + selected + " buah. Ibu meminta tiga pisang. Telu dalam ngoko dan tiga dalam krama.")
+      : turn.options[selected][1]) : "";
+
+    byId("vr-response-title").textContent = turn.quantity ? "Jumlah pisang" : "Jawaban Nadia";
+    const controls = turn.quantity
+      ? '<div class="vr-quantity">' +
+          '<button type="button" data-delta="-1" aria-label="Kurangi jumlah pisang">−</button>' +
+          '<output id="vr-quantity" aria-live="polite">' + transaction.quantity + '</output>' +
+          '<button type="button" data-delta="1" aria-label="Tambah jumlah pisang">+</button>' +
+        '</div><p class="vr-number-note" id="vr-number-note"></p>' +
+        '<button type="button" class="pb-next" id="vr-confirm-quantity"' + (answered ? " disabled" : "") + '>Konfirmasi jumlah</button>'
+      : turn.options.map(([text], index) => '<button type="button" lang="jv" data-choice="' + index + '"' +
+        (answered ? " disabled" : "") + (selected === index ? ' class="' + (correct ? "ok" : "bad") + '"' : "") + ">" + text + "</button>").join("");
+
+    responseSlot.innerHTML = '<div class="pb-dialog">' + controls + (answered
+      ? '<div class="pb-fb" id="vr-turn-feedback" data-outcome="' + (correct ? "correct" : "incorrect") + '" role="status">' +
+          '<strong>' + (correct ? "Tepat" : "Kurang tepat") + '</strong>' + feedback +
+          (correct ? '<p class="vr-seller-reply"><strong>' + spot.seller + '</strong><span lang="jv">' + turn.reply[0] +
+            '</span><small>' + turn.reply[1] + '</small></p>' : '') +
+        '</div><button class="pb-next" id="vr-next-turn" type="button" aria-describedby="vr-turn-feedback">' +
+          (correct ? (lastTurn ? "Selesaikan Transaksi" : "Lanjutkan Percakapan") : "Coba Lagi") + "</button>"
+      : '') + '</div>';
+
+    function submit(value, text) {
+      if (activeConversation !== session || transaction.turn !== turnIndex || transaction.selected !== null) return;
+      const isCorrect = value === (turn.quantity ?? turn.answer);
+      transaction.selected = value;
+      mission.attempts.push({ seller: spot.id, turn: turnIndex, choice: value, correct: isCorrect });
+      saveMission();
+      progress.recordDialog({ id: spot.scenario, teks: text, benar: isCorrect });
+      renderResponses(session, "#vr-next-turn");
+    }
+
+    if (turn.quantity) {
+      const less = responseSlot.querySelector('[data-delta="-1"]');
+      const more = responseSlot.querySelector('[data-delta="1"]');
+      function displayQuantity() {
+        const count = transaction.quantity;
+        byId("vr-quantity").textContent = count;
+        byId("vr-number-note").textContent = count === turn.quantity ? "Telu (ngoko) · tiga (krama)" : "buah pisang";
+        less.disabled = answered || count <= 1;
+        more.disabled = answered || count >= 9;
+      }
+      for (const button of [less, more]) {
+        button.onclick = () => {
+          if (activeConversation !== session || transaction.turn !== turnIndex || transaction.selected !== null || button.disabled) return;
+          transaction.quantity += Number(button.dataset.delta);
+          saveMission();
+          displayQuantity();
+          if (button.disabled) (button === less ? more : less).focus();
+        };
+      }
+      displayQuantity();
+      byId("vr-confirm-quantity").onclick = () => submit(transaction.quantity, transaction.quantity + " buah pisang");
+    } else {
+      responseSlot.querySelectorAll("[data-choice]").forEach((button) => {
+        button.onclick = () => submit(Number(button.dataset.choice), button.textContent);
+      });
+    }
+
+    if (answered) {
+      byId("vr-next-turn").onclick = () => {
+        if (activeConversation !== session || transaction.turn !== turnIndex || transaction.selected !== selected) return;
+        transaction.selected = null;
+        if (correct) transaction.turn += 1;
+        if (correct && lastTurn) {
+          finishTransaction(spot);
+          return;
+        }
+        saveMission();
+        if (correct) renderTurn(session, turnFocus(turns[transaction.turn]));
+        else renderResponses(session, turnFocus(turn));
+      };
+    }
+
+    const responses = responseSlot.parentElement;
+    if (focusTarget) {
+      responses.scrollTop = 0;
+      responseSlot.querySelector(focusTarget)?.focus();
+    }
+  }
+
+  function turnFocus(turn) {
+    return turn.quantity ? '[data-delta="1"]' : "[data-choice]";
+  }
+
+  function closeConversation() {
+    if (!activeConversation) return;
+    const { trigger, restoreOrientation } = activeConversation;
+    activeConversation = null;
+    viewer.stopMovement();
+    panorama.classList.remove("vr-conversing");
+    conversation.close();
+    responseSlot.replaceChildren();
+    speech.replaceChildren();
+    art.removeAttribute("src");
+    if (restoreOrientation) viewer.startOrientation();
+    const focus = trigger?.isConnected && getComputedStyle(trigger).visibility === "visible" ? trigger : panorama;
+    focus.focus({ preventScroll: true });
+  }
+
+  function finishTransaction(spot) {
+    mission.transactions[spot.id].completed = true;
+    for (const id of itemIds) {
+      const item = items[id];
+      if (item.seller === spot.id) mission.purchased[id] = item.quantity;
+    }
+    saveMission();
+    markShared("dialog:" + spot.scenario);
+    closeConversation();
+    updateBar();
+    if (canStartQuiz()) {
+      showShoppingList();
+      return;
+    }
+
+    const bought = spot.id === "bu-sari" ? "Cabai dan tomat sudah dibeli." : "Tiga buah pisang sudah dibeli.";
+    showPanel('<h2 id="vr-panel-title">Transaksi selesai</h2><p>' + bought + '</p><p>' + nextObjective() +
+      '</p><button class="vr-btn vr-action" id="vr-resume-exploration" type="button">Lanjut Eksplorasi</button>');
+    byId("vr-resume-exploration").onclick = () => panel.close();
+  }
+
+  function nextSeller() {
+    const localSeller = Object.values(sellers).find((spot) => spot.scene === viewer.getScene());
+    if (localSeller && !mission.transactions[localSeller.id].completed && hasTurnToResume(localSeller)) return localSeller;
+    return mission.transactions["bu-sari"].completed ? sellers["pak-budi"] : sellers["bu-sari"];
+  }
+
+  function hasTurnToResume(spot) {
+    const transaction = mission.transactions[spot.id];
+    return transaction.turn > 0 || transaction.selected !== null;
+  }
+
+  function nextObjective() {
+    if (canShowResults()) return "Lihat hasil misi.";
+    if (canStartQuiz()) return mission.quiz.started ? "Lanjutkan tantangan bahasa." : "Siap untuk tantangan bahasa.";
+
+    const spot = nextSeller();
+    if (viewer.getScene() !== spot.scene) {
+      return spot.id === "bu-sari" ? "Temukan kios sayur." : "Lanjutkan ke kios buah.";
+    }
+    if (hasTurnToResume(spot)) return "Lanjutkan percakapan dengan " + spot.seller + ".";
+    const learnFirst = spot.id === "bu-sari" && (!mission.learned.includes("cabai") || !mission.learned.includes("tomat"));
+    return learnFirst ? "Pelajari cabai dan tomat, atau ajak Bu Sari bicara." : "Ajak " + spot.seller + " bicara.";
+  }
+
+  function showShoppingList() {
+    const ready = canStartQuiz();
+    const results = canShowResults();
+    const spot = nextSeller();
+    const action = results ? "Lihat Hasil Misi" : mission.quiz.started ? "Lanjutkan Tantangan Bahasa" : "Lanjut ke Tantangan Bahasa";
+    const canTalk = !ready && viewer.isLoaded() && viewer.getScene() === spot.scene;
+    const talkLabel = (hasTurnToResume(spot) ? "Lanjutkan Percakapan dengan " : "Bicara dengan ") + spot.seller;
+    showPanel('<h2 id="vr-panel-title">' + (ready ? "Daftar Belanja Terpenuhi" : "Daftar belanja") + '</h2><p><strong>' +
+      buyingCount() + "/" + itemIds.length + ' barang terkumpul</strong></p>' + shoppingList(!ready) +
+      (ready ? '<button class="vr-btn vr-action" id="vr-shopping-action" type="button">' + action + '</button>'
+        : '<p>' + nextObjective() + '</p>' + (canTalk
+          ? '<button class="vr-btn vr-action" id="vr-shopping-action" type="button">' + talkLabel + '</button>' : '')));
+    const button = byId("vr-shopping-action");
+    if (button) button.onclick = () => {
+      panel.close();
+      if (results) showResults();
+      else if (ready) startQuiz();
+      else openConversation(spot, document.activeElement);
+    };
+  }
+
+  function quizScore() {
+    return mission.quiz.answers.filter((answer, index) => answer === vrQuestions[index].answer).length * 20;
+  }
+
+  function startQuiz() {
+    if (!canStartQuiz() || canShowResults()) return;
+    mission.quiz.started = true;
+    saveMission();
+    updateBar();
+    renderQuiz();
+  }
+
+  function renderQuiz(focusNext = false) {
+    const quiz = mission.quiz;
+    const index = quiz.index;
+    const question = vrQuestions[index];
+    const answered = quiz.answers.length > index;
+    const selected = quiz.answers[index];
+    const correct = selected === question.answer;
+    const last = index === vrQuestions.length - 1;
+
+    showStory('<div class="vr-quiz">' +
+      '<p class="vr-story-kicker">Soal ' + (index + 1) + "/" + vrQuestions.length + '</p>' +
+      '<h1 id="vr-story-title" tabindex="-1">Tantangan Bahasa Akhir</h1>' +
+      '<p class="vr-quiz-score">Skor <strong>' + quizScore() + '/100</strong></p>' +
+      '<h2>' + question.question + '</h2><div class="vr-quiz-options">' +
+      question.options.map((text, choice) => '<button type="button" data-answer="' + choice + '"' +
+        (answered ? " disabled" : "") +
+        (answered && choice === question.answer ? ' data-result="correct"' : (choice === selected ? ' data-result="incorrect"' : "")) +
+        ">" + text + "</button>").join("") + "</div>" +
+      (answered ? '<p class="vr-quiz-feedback" role="status" id="vr-quiz-feedback" data-result="' + (correct ? "correct" : "incorrect") +
+        '"><strong>' + (correct ? "Tepat · +20 poin" : "Kurang tepat · 0 poin") + '</strong> ' + question.explanation + "</p>" : "") +
+      '<div class="vr-actions">' +
+      (answered ? '<button class="vr-btn vr-action" type="button" id="vr-next-question" aria-describedby="vr-quiz-feedback">' +
+        (last ? "Lihat Hasil Misi" : "Soal Berikutnya") + "</button>" : "") +
+      '<button class="vr-btn vr-secondary" id="vr-pause-quiz" type="button">Kembali ke Panorama</button></div></div>', "quiz");
+
+    story.querySelectorAll("[data-answer]").forEach((button) => {
+      button.onclick = () => {
+        if (quiz.index !== index || quiz.answers.length !== index) return;
+        quiz.answers.push(Number(button.dataset.answer));
+        saveMission();
+        renderQuiz(true);
+      };
+    });
+    byId("vr-pause-quiz").onclick = () => story.close();
+    if (answered) {
+      const button = byId("vr-next-question");
+      button.onclick = () => {
+        if (quiz.index !== index || quiz.answers.length !== index + 1) return;
+        quiz.index += 1;
+        if (last) mission.completed = true;
+        saveMission();
+        if (last) {
+          updateBar();
+          showResults();
+        } else renderQuiz();
+      };
+      if (focusNext) button.focus();
+    }
+  }
+
+  function showResults() {
+    if (!canShowResults()) return;
+    const correct = mission.attempts.filter((attempt) => attempt.correct).length;
+    const completed = Object.values(mission.transactions).filter((transaction) => transaction.completed).length;
+    const learned = itemIds.filter((id) => mission.learned.includes(id))
+      .map((id) => '<span lang="jv">' + items[id].term + '</span>').join(", ") || "Belum ada materi yang ditandai.";
+    showStory('<div class="vr-story-grid vr-result"><div class="vr-story-copy">' +
+      '<p class="vr-story-kicker">Misi Belanja <span lang="jv">ing</span> Pasar Basa</p>' +
+      '<h1 id="vr-story-title" tabindex="-1">Misi Rampung</h1>' +
+      '<div class="vr-result-totals"><strong>Daftar belanja ' + buyingCount() + "/" + itemIds.length +
+      '</strong><strong>Skor tantangan ' + quizScore() + '/100</strong></div>' + shoppingList() +
+      '<dl class="vr-result-details">' +
+        '<div><dt>Transaksi</dt><dd>Bu Sari dan Pak Budi selesai</dd></div>' +
+        '<div><dt>Percakapan selesai</dt><dd>' + completed + '</dd></div>' +
+        '<div><dt>Kosakata dipelajari</dt><dd>' + learned + '</dd></div>' +
+        '<div><dt>Jawaban latihan</dt><dd>' + correct + ' benar · ' + (mission.attempts.length - correct) + ' salah</dd></div>' +
+      '</dl><div class="vr-actions">' +
+        '<button class="vr-btn vr-action" id="pb-reset" type="button">Ulangi Misi</button>' +
+        '<a class="vr-btn vr-secondary" href="../index.html">Kembali ke Beranda</a>' +
+      '</div></div><img class="vr-nadia" src="../assets/nadia.webp" alt="" width="600" height="800"></div>', "result");
+    byId("pb-reset").onclick = () => {
+      mission = freshMission();
+      saveMission();
+      window.location.reload();
     };
   }
 
   function updateBar() {
-    const done = PasarBasa.progress.get().done;
-    const label = { "vocab:cabai": "Cabai", "vocab:tomat": "Tomat", "vocab:pisang": "Pisang", "dialog:beli-cabai": "Dialog" };
-    bar.innerHTML = "<b>Misi:</b> " + PasarBasa.progress.REQUIRED.map((a) => (done.includes(a) ? "✅" : "⬜") + " " + label[a]).join(" · ");
+    const count = buyingCount();
+    byId("vr-mission-count").textContent = count + "/" + itemIds.length;
+    byId("vr-mission-meter").value = count;
+    byId("vr-next-goal").textContent = nextObjective();
   }
 
-  // toggle audio (KF-VR-16)
-  const ab = document.getElementById("btn-audio");
-  ab.onclick = () => {
-    PasarBasa.audio.setEnabled(!PasarBasa.audio.isEnabled());
-    ab.textContent = PasarBasa.audio.isEnabled() ? "🔊" : "🔇";
-  };
+  byId("mission-bar").onclick = showShoppingList;
+  byId("vr-close-panel").onclick = () => panel.close();
+  byId("vr-end-conversation").onclick = closeConversation;
+  story.addEventListener("cancel", (event) => {
+    if (story.dataset.phase === "intro" || story.dataset.phase === "briefing") event.preventDefault();
+  });
+  conversation.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    closeConversation();
+  });
+  viewer.on("scenechange", (id) => {
+    closeConversation();
+    if (panel.open && panel.dataset.kind === "vocab") panel.close();
+    mission.scene = id;
+    saveMission();
+    byId("vr-location").textContent = locations[id];
+    updateBar();
+  });
 
+  const resumeScene = mission.scene;
+  if (mission.briefingDone && Object.hasOwn(locations, resumeScene) && resumeScene !== viewer.getScene()) {
+    if (viewer.isLoaded()) viewer.loadScene(resumeScene);
+    else {
+      const restoreScene = () => {
+        viewer.off("load", restoreScene);
+        viewer.loadScene(resumeScene);
+      };
+      viewer.on("load", restoreScene);
+    }
+  }
+
+  byId("vr-location").textContent = locations[viewer.getScene()];
   updateBar();
+  if (!mission.introSeen) showIntroduction();
+  else if (!mission.briefingDone) showBriefing();
+  else if (canShowResults()) showResults();
+  else if (canStartQuiz() && mission.quiz.started) renderQuiz();
+  else if (canStartQuiz()) showShoppingList();
 })();

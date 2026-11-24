@@ -45,19 +45,20 @@ const viewer = pannellum.viewer("panorama", {
 // riwayat untuk tombol Kembali (KF-VR-06)
 let stack = [FIRST],
   goingBack = false;
+const backButton = document.getElementById("btn-back");
 viewer.on("scenechange", (id) => {
-  if (goingBack) {
-    goingBack = false;
-    return;
-  }
-  stack.push(id);
+  if (!goingBack) stack.push(id);
+  goingBack = false;
+  backButton.disabled = true;
 });
-document.getElementById("btn-back").onclick = () => {
-  if (stack.length > 1) {
-    stack.pop();
-    goingBack = true;
-    viewer.loadScene(stack[stack.length - 1]);
-  }
+viewer.on("load", () => { backButton.disabled = stack.length <= 1; });
+viewer.on("error", () => { backButton.disabled = stack.length <= 1; });
+backButton.onclick = () => {
+  if (stack.length <= 1 || viewer.isLoaded() === false) return;
+  backButton.disabled = true;
+  stack.pop();
+  goingBack = true;
+  viewer.loadScene(stack[stack.length - 1]);
 };
 // bantu cari koordinat hotspot: klik panorama -> lihat console
 document.getElementById("panorama").addEventListener("dblclick", (e) => console.log("pitch,yaw =", viewer.mouseEventToCoords(e)));
