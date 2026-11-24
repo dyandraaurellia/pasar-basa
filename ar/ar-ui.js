@@ -16,7 +16,26 @@ window.addEventListener('ar:found', e => {
   $('badge').textContent = '✅ Kartu terdeteksi: ' + (v ? v.indonesia : activeId);
   enable(true);
 });
-window.addEventListener('ar:lost', () => { $('badge').textContent = 'Arahkan kamera ke kartu'; enable(false); });
+window.addEventListener('ar:lost', e => {
+  if (PasarBasa.pin.isPinned()) return;
+  if (activeId !== e.detail.id) return;
+  activeId = null;
+  $('badge').textContent = 'Arahkan kamera ke kartu';
+  enable(false);
+});
+window.addEventListener('ar:pinned', e => {
+  activeId = e.detail.id;
+  $('badge').textContent = '🔒 Objek dikunci di layar · kartu boleh disimpan';
+  enable(true);
+});
+window.addEventListener('ar:unpinned', e => {
+  activeId = e.detail.id;
+  $('badge').textContent = 'Arahkan kamera ke kartu';
+  enable(Boolean(activeId));
+});
+window.addEventListener('ar:pin-error', e => showHint(e.detail.message));
+window.addEventListener('ar:learned', updateBar);
+window.addEventListener('ar:learning-error', () => showHint('Kartu belajar gagal dimuat. Muat ulang halaman untuk mencoba kembali.'));
 window.addEventListener('ar:hint', () => showHint('Belum terdeteksi. Dekatkan kartu 20–40 cm, pastikan terang dan tanpa pantulan.'));
 window.addEventListener('ar:error', () => showHint('Kamera tidak bisa diakses. Izinkan kamera di pengaturan browser lalu muat ulang halaman.'));
 
@@ -26,17 +45,23 @@ function openPanel(html) { $('panel').innerHTML = '<button class="close">✕</bu
 
 $('btn-info').onclick = () => {
   if (!activeId) return;
-  const v = PasarBasa.data.getVocab(activeId);
-  openPanel(`<h3>${v.jawa}</h3><p>Artinya: <b>${v.indonesia}</b></p><button class="ar-btn primary" id="pb-play">🔊 Dengarkan</button>`);
-  $('pb-play').onclick = () => PasarBasa.audio.play(activeId);
-  PasarBasa.progress.mark('vocab:' + activeId); updateBar();
+  PasarBasa.learningCard.show(activeId);
 };
 $('btn-audio').onclick = () => activeId && PasarBasa.audio.play(activeId);
 
 // kontrol objek (model punya id "obj-<id>")
 function obj() { return activeId && $('obj-' + activeId); }
-function rotate(d) { const o = obj(); if (!o) return; const r = o.getAttribute('rotation'); o.setAttribute('rotation', { x: r.x, y: r.y + d * 30, z: r.z }); }
-function scaleBy(f) { const o = obj(); if (!o) return; const s = o.getAttribute('scale'); o.setAttribute('scale', { x: s.x * f, y: s.y * f, z: s.z * f }); }
+function rotate(d) {
+  if (PasarBasa.pin.isPinned()) return PasarBasa.pin.rotate(d * Math.PI / 6);
+  const o = obj(); if (!o) return;
+  const r = o.getAttribute('rotation'); o.setAttribute('rotation', { x: r.x, y: r.y + d * 30, z: r.z });
+}
+function scaleBy(f) {
+  if (PasarBasa.pin.isPinned()) return PasarBasa.pin.zoomBy(f);
+  const o = obj(); if (!o) return;
+  const next = Math.min(2, Math.max(0.5, o.getAttribute('scale').x * f));
+  o.setAttribute('scale', { x: next, y: next, z: next });
+}
 $('btn-rot-l').onclick = () => rotate(-1);
 $('btn-rot-r').onclick = () => rotate(1);
 $('btn-plus').onclick = () => scaleBy(1.2);
@@ -49,7 +74,7 @@ $('btn-dialog').onclick = () => {
 function showSummary() {
   const s = PasarBasa.progress.summary();
   openPanel(`<h3>Hasil Belajar</h3><p>Aktivitas selesai: <b>${s.done}/${s.total}</b><br>Jawaban benar: ${s.correct} · salah: ${s.wrong}</p><button class="ar-btn primary" id="pb-reset">↺ Ulangi Misi</button>`);
-  $('pb-reset').onclick = () => { PasarBasa.progress.reset(); updateBar(); $('panel').hidden = true; };
+  $('pb-reset').onclick = () => { PasarBasa.progress.reset(); updateBar(); PasarBasa.learningCard.refresh(); $('panel').hidden = true; };
 }
 
 $('btn-sound').onclick = () => { PasarBasa.audio.setEnabled(!PasarBasa.audio.isEnabled()); $('btn-sound').textContent = PasarBasa.audio.isEnabled() ? '🔊' : '🔇'; };

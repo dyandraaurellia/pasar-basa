@@ -5,8 +5,14 @@ const sceneEl = document.getElementById('scene');
 
 IDS.forEach(id => {
   const t = document.getElementById('t-' + id);
-  t.addEventListener('targetFound', () => emit('ar:found', { id }));
-  t.addEventListener('targetLost',  () => emit('ar:lost',  { id }));
+  t.addEventListener('targetFound', () => {
+    emit('ar:tracking', { id, visible: true });
+    if (!window.PasarBasa?.pin?.isPinned()) emit('ar:found', { id });
+  });
+  t.addEventListener('targetLost', () => {
+    emit('ar:tracking', { id, visible: false });
+    if (!window.PasarBasa?.pin?.isPinned()) emit('ar:lost', { id });
+  });
 });
 
 // Dipanggil Zaidan lewat event 'ar:start' (tombol Mulai AR -> user gesture -> izin kamera)

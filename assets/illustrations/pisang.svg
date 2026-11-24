@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" role="img" aria-label="Ilustrasi buah pisang kuning">
+  <ellipse cx="200" cy="246" rx="106" ry="13" fill="#e9d5c2"/>
+  <path d="M105 85c-5 106 82 143 173 64-51 110-197 109-201-34Z" fill="#efba36" stroke="#c98b27" stroke-width="3"/>
+  <path d="M126 73c-4 115 91 147 177 44-38 121-192 150-208-4Z" fill="#ffdc64" stroke="#d5a138" stroke-width="3"/>
+  <path d="M119 98c7 83 81 118 153 58" fill="none" stroke="#fff1ae" stroke-width="9" stroke-linecap="round"/>
+  <path d="m95 104-9-28 22-10 16 26Z" fill="#7c9149"/>
+  <path d="m296 118 9-11 9 5-8 15Z" fill="#76502f"/>
+</svg>

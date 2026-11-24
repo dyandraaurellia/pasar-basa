@@ -4,11 +4,13 @@
 <title>AR Kartu Pasar Basa</title>
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<script src="model-size.js"></script>
 <link rel="stylesheet" href="ar.css">
 </head><body>
 
 <!-- ===== Zaidan: UI overlay ===== -->
 <div id="ar-ui">
+  <div id="model-stage" tabindex="0" role="region" aria-label="Area objek terkunci. Gunakan tombol panah untuk menggeser atau memutar, plus dan minus untuk ukuran." hidden></div>
   <div id="topbar">
     <a class="ar-btn" href="../index.html">🏠</a>
     <div id="mission-bar"></div>
@@ -17,7 +19,35 @@
   <div id="badge">Arahkan kamera ke kartu</div>
   <div id="hint" hidden></div>
   <div id="panel" hidden></div>
+  <section id="learning-card" class="learning-card" aria-labelledby="learning-name" hidden>
+    <div class="learning-heading">
+      <span class="learning-eyebrow">KARTU BELAJAR · PASAR BASA</span>
+      <button id="learning-close" class="learning-close" type="button" aria-label="Tutup kartu belajar">✕</button>
+    </div>
+    <div class="learning-hero">
+      <img id="learning-image" class="learning-image" alt="">
+      <div><span class="learning-label">BAHASA INDONESIA</span><h2 id="learning-name"></h2>
+      <p id="learning-tracking" class="learning-tracking" role="status"></p></div>
+    </div>
+    <button id="learning-toggle" class="learning-toggle" type="button" aria-expanded="true">Ringkas kartu</button>
+    <div class="learning-words">
+      <div class="learning-word"><div><span class="learning-label">NGOKO</span><strong id="learning-ngoko"></strong></div>
+        <button class="learning-listen" type="button" data-register="ngoko" aria-label="Dengarkan pelafalan ngoko"><span aria-hidden="true">♫</span> Dengarkan</button></div>
+      <div class="learning-word"><div><span class="learning-label">KRAMA</span><strong id="learning-krama"></strong></div>
+        <button class="learning-listen" type="button" data-register="krama" aria-label="Dengarkan pelafalan krama"><span aria-hidden="true">♫</span> Dengarkan</button></div>
+    </div>
+    <p id="learning-note" class="learning-note"></p>
+    <p id="learning-audio-status" class="learning-audio-status" role="status" aria-live="polite">Tekan Dengarkan untuk memutar pelafalan.</p>
+    <button id="learning-done" class="learning-done" type="button">Tandai sudah dipelajari</button>
+  </section>
   <div id="controls">
+    <div id="pin-tools" hidden>
+      <button class="ar-btn" id="btn-move" type="button" aria-pressed="true">✥ Geser</button>
+      <button class="ar-btn" id="btn-turn" type="button" aria-pressed="false">↻ Putar</button>
+      <button class="ar-btn" id="btn-pose-reset" type="button">Atur ulang</button>
+      <span id="gesture-help">Seret untuk menggeser · dua jari untuk ukuran dan putaran</span>
+    </div>
+    <button class="ar-btn" id="btn-pin" type="button" disabled>Kunci objek</button>
     <button class="ar-btn" id="btn-info" disabled>ℹ️ Info</button>
     <button class="ar-btn" id="btn-audio" disabled>🔊</button>
     <button class="ar-btn" id="btn-rot-l" disabled>⟲</button>
@@ -29,7 +59,7 @@
   <div id="intro">
     <div class="card">
       <h2>AR Kartu Pasar Basa</h2>
-      <ol><li>Siapkan kartu cabai, tomat, atau pisang.</li><li>Izinkan akses kamera.</li><li>Arahkan kamera ke kartu (20–40 cm, cahaya cukup).</li><li>Selesaikan misi: 3 kosakata + 1 dialog.</li></ol>
+      <ol><li>Siapkan kartu cabai, tomat, atau pisang.</li><li>Izinkan akses kamera.</li><li>Arahkan kamera ke kartu (20–40 cm, cahaya cukup).</li><li>Tekan Kunci objek agar model tetap di layar saat kartu disimpan. Pilih Geser atau Putar, lalu seret layar.</li><li>Selesaikan misi: 3 kosakata + 1 dialog.</li></ol>
       <button class="ar-btn primary" id="btn-start">Mulai AR</button>
     </div>
   </div>
@@ -45,9 +75,9 @@
     <a-asset-item id="m-pisang" src="../assets/models/pisang.glb"></a-asset-item>
   </a-assets>
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-  <a-entity id="t-cabai"  mindar-image-target="targetIndex: 0"><a-gltf-model id="obj-cabai"  src="#m-cabai"  scale="0.5 0.5 0.5" position="0 0 0.1"></a-gltf-model></a-entity>
-  <a-entity id="t-tomat"  mindar-image-target="targetIndex: 1"><a-gltf-model id="obj-tomat"  src="#m-tomat"  scale="0.5 0.5 0.5" position="0 0 0.1"></a-gltf-model></a-entity>
-  <a-entity id="t-pisang" mindar-image-target="targetIndex: 2"><a-gltf-model id="obj-pisang" src="#m-pisang" scale="0.5 0.5 0.5" position="0 0 0.1"></a-gltf-model></a-entity>
+  <a-entity id="t-cabai"  mindar-image-target="targetIndex: 0"><a-gltf-model id="obj-cabai"  src="#m-cabai"  fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-gltf-model></a-entity>
+  <a-entity id="t-tomat"  mindar-image-target="targetIndex: 1"><a-gltf-model id="obj-tomat"  src="#m-tomat"  fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-gltf-model></a-entity>
+  <a-entity id="t-pisang" mindar-image-target="targetIndex: 2"><a-gltf-model id="obj-pisang" src="#m-pisang" fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-gltf-model></a-entity>
 </a-scene>
 
 <script>window.BASE = '../';</script>
@@ -56,5 +86,7 @@
 <script src="../shared/progress.js"></script>
 <script src="../shared/dialog-ui.js"></script>
 <script src="ar-tracking.js"></script>
+<script src="model-interaction.js"></script>
+<script src="learning-card.js"></script>
 <script src="ar-ui.js"></script>
 </body></html>
