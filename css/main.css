@@ -1,7 +1,823 @@
-*{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif;background:#fdf3e3;color:#3b2a1a}
-.wrap{max-width:560px;margin:0 auto;padding:24px 16px}
-h1{margin:0 0 4px}.sub{color:#7a5c3e;margin:0 0 20px}
-.card{background:#fff;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{display:block;text-align:center;text-decoration:none;background:#b5532f;color:#fff;font-weight:600;padding:16px;border-radius:12px;font-size:17px;margin:10px 0}
-.btn.alt{background:#4f7a3a}
-ol{padding-left:20px}
+/* ===================================
+   PASAR BASA - HOMEPAGE
+   =================================== */
+
+.home-page {
+  --green: #374b36;
+  --dark-green: #25372a;
+  --cream: #f8f2e5;
+  --gold: #d9ae62;
+  --terracotta: #b5532f;
+  --brown: #3b2a1a;
+  --muted: #77634b;
+  --border: #ded5c4;
+
+  margin: 0;
+  background: var(--cream);
+  color: var(--brown);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  line-height: 1.6;
+}
+
+.home-page *,
+.home-page *::before,
+.home-page *::after {
+  box-sizing: border-box;
+}
+
+.home-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-page img {
+  display: block;
+  max-width: 100%;
+}
+
+.home-page h1,
+.home-page h2,
+.home-page h3,
+.home-page p {
+  margin: 0;
+}
+
+.home-page h1,
+.home-page h2,
+.home-page h3 {
+  line-height: 1.15;
+}
+
+.home-page .container {
+  width: min(1160px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
+.home-page section[id] {
+  scroll-margin-top: 90px;
+}
+
+/* NAVBAR */
+
+.home-page .navbar {
+  background: var(--dark-green);
+  color: var(--cream);
+}
+
+.home-page .nav-inner {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.home-page .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.home-page .brand-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: var(--gold);
+  color: var(--dark-green);
+  font-size: 17px;
+}
+
+.home-page .brand-dot {
+  color: var(--gold);
+}
+
+.home-page nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.home-page nav a:hover {
+  color: var(--gold);
+}
+
+/* HERO */
+
+.home-page .hero {
+  overflow: hidden;
+  padding: 64px 0;
+}
+
+.home-page .hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  align-items: center;
+  gap: 44px;
+}
+
+.home-page .eyebrow {
+  color: var(--terracotta);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  margin-bottom: 16px;
+}
+
+.home-page .eyebrow.light {
+  color: var(--gold);
+}
+
+.home-page .hero h1 {
+  color: var(--dark-green);
+  font-size: clamp(42px, 5.8vw, 74px);
+  font-weight: 850;
+  letter-spacing: -2.5px;
+}
+
+.home-page .hero h1 span {
+  display: block;
+  color: var(--terracotta);
+}
+
+.home-page .hero-description {
+  color: var(--muted);
+  max-width: 530px;
+  font-size: 17px;
+  margin-top: 24px;
+}
+
+.home-page .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.home-page .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: 1px solid transparent;
+  padding: 13px 22px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 750;
+  text-align: center;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.home-page .btn:hover {
+  transform: translateY(-2px);
+}
+
+.home-page .btn-primary {
+  background: var(--green);
+  color: #fff;
+}
+
+.home-page .btn-primary:hover {
+  background: var(--dark-green);
+}
+
+.home-page .btn-outline {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.home-page .btn-gold {
+  background: var(--gold);
+  color: var(--dark-green);
+}
+
+.home-page a:focus-visible {
+  outline: 3px solid var(--terracotta);
+  outline-offset: 4px;
+}
+
+.home-page .btn.full {
+  width: 100%;
+}
+
+.home-page .hero-features,
+.home-page .module-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.home-page .hero-features {
+  margin-top: 26px;
+}
+
+.home-page .hero-features span,
+.home-page .module-features span {
+  border-radius: 30px;
+  padding: 5px 12px;
+  background: #e5e9da;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+/* MASKOT NADIA */
+
+.home-page .hero-visual {
+  min-height: 460px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.home-page .character-circle {
+  position: absolute;
+  width: 88%;
+  aspect-ratio: 1;
+  max-width: 400px;
+  bottom: 35px;
+  border-radius: 50%;
+  background: #e3e6d2;
+  border: 1px solid #d1d7bd;
+}
+
+.home-page .nadia-hero {
+  position: relative;
+  height: 430px;
+  width: 90%;
+  object-fit: contain;
+  z-index: 2;
+  filter: drop-shadow(0 14px 12px #25372a22);
+}
+
+.home-page .speech-card {
+  position: absolute;
+  top: 24px;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  background: #fffdf8;
+  padding: 14px 20px;
+  border: 1px solid var(--border);
+  border-radius: 16px 16px 16px 3px;
+  box-shadow: 0 6px 22px #3b2a1a0d;
+}
+
+.home-page .speech-card strong {
+  color: var(--green);
+  font-size: 19px;
+}
+
+.home-page .speech-card span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.home-page .character-name {
+  position: absolute;
+  z-index: 4;
+  bottom: 0;
+  left: 0;
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: var(--dark-green);
+  color: var(--cream);
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page .character-name span {
+  color: var(--gold);
+  font-size: 11px;
+}
+
+/* DAFTAR BELANJA */
+
+.home-page .mission-section {
+  padding: 34px 0;
+  background: var(--green);
+  color: var(--cream);
+}
+
+.home-page .mission-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.home-page .mission-inner h2 {
+  font-size: 29px;
+}
+
+.home-page .mission-inner p {
+  margin-top: 12px;
+  color: #e4e7da;
+  font-size: 14px;
+  max-width: 480px;
+}
+
+.home-page .shopping-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.home-page .shopping-item {
+  text-align: center;
+  background: #ffffff12;
+  border: 1px solid #ffffff24;
+  border-radius: 14px;
+  padding: 18px 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page .shopping-item > span {
+  font-size: 37px;
+  margin-bottom: 5px;
+}
+
+.home-page .shopping-item small {
+  font-size: 11px;
+  color: #d9e1cc;
+}
+
+/* SECTION */
+
+.home-page .section {
+  padding-block: 70px;
+}
+
+.home-page .section-heading {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 36px;
+}
+
+.home-page .section-heading h2 {
+  color: var(--dark-green);
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -1px;
+}
+
+.home-page .section-heading p {
+  margin-top: 14px;
+  color: var(--muted);
+}
+
+/* MODUL AR DAN VR */
+
+.home-page .module-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.home-page .module-card {
+  border: 1px solid var(--border);
+  background: #fffdf8;
+  border-radius: 22px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 30px #3b2a1a08;
+}
+
+.home-page .module-image {
+  height: 250px;
+  overflow: hidden;
+  position: relative;
+}
+
+.home-page .module-image > img:not(.seller-preview) {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.home-page .module-tag {
+  position: absolute;
+  z-index: 3;
+  top: 16px;
+  left: 16px;
+  padding: 7px 13px;
+  background: var(--dark-green);
+  color: white;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.home-page .vr-visual {
+  background: var(--dark-green);
+}
+
+.home-page .vr-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #25372a25;
+}
+
+.home-page .seller-preview {
+  position: absolute;
+  right: 14px;
+  bottom: 0;
+  height: 90%;
+  width: 38%;
+  object-fit: contain;
+  object-position: bottom;
+  z-index: 2;
+  filter: drop-shadow(0 5px 6px #0003);
+}
+
+.home-page .degree-label {
+  position: absolute;
+  z-index: 3;
+  bottom: 18px;
+  left: 20px;
+  color: white;
+  font-size: 42px;
+  font-weight: 800;
+  text-shadow: 0 2px 8px #0006;
+}
+
+/* ILUSTRASI AR */
+
+.home-page .ar-visual {
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, #e6ead9, #aebf9b);
+}
+
+.home-page .scan-decoration {
+  width: 200px;
+  height: 180px;
+  border: 2px dashed #374b3688;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+}
+
+.home-page .flashcard {
+  background: var(--cream);
+  border: 3px solid var(--gold);
+  border-radius: 15px;
+  width: 132px;
+  height: 150px;
+  transform: rotate(-8deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--dark-green);
+  box-shadow: 6px 10px 20px #25372a25;
+}
+
+.home-page .flashcard > span {
+  font-size: 58px;
+  line-height: 1.2;
+}
+
+.home-page .flashcard strong {
+  letter-spacing: 2px;
+  font-size: 14px;
+}
+
+.home-page .flashcard small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.home-page .module-content {
+  padding: 26px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-page .module-number {
+  color: var(--terracotta);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.home-page .module-content h3 {
+  margin-top: 10px;
+  color: var(--green);
+  font-size: 27px;
+}
+
+.home-page .module-content p {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 14px;
+}
+
+.home-page .module-features {
+  margin: 20px 0;
+}
+
+.home-page .module-content .btn {
+  margin-top: auto;
+}
+
+.home-page .module-note {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* PANDUAN */
+
+.home-page .guide-section {
+  background: #ecebdd;
+}
+
+.home-page .steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.home-page .step-card {
+  position: relative;
+  background: #fffdf8;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+
+.home-page .step-number {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #c3b79d;
+}
+
+.home-page .step-icon {
+  width: 66px;
+  height: 66px;
+  background: #e5e9d9;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 29px;
+  margin-bottom: 24px;
+}
+
+.home-page .step-card h3 {
+  font-size: 21px;
+  color: var(--dark-green);
+  margin-bottom: 14px;
+}
+
+.home-page .step-card p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* BANNER PENUTUP */
+
+.home-page .final-banner {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 36px 50px;
+  background: var(--dark-green);
+  color: var(--cream);
+  border-radius: 24px;
+}
+
+.home-page .final-banner img {
+  width: 180px;
+  height: 230px;
+  object-fit: contain;
+}
+
+.home-page .final-banner h2 {
+  font-size: clamp(27px, 4vw, 40px);
+}
+
+.home-page .final-banner p {
+  color: #d9dfd1;
+  margin: 16px 0 24px;
+}
+
+/* FOOTER */
+
+.home-page .footer {
+  background: var(--dark-green);
+  color: var(--cream);
+  padding-top: 36px;
+}
+
+.home-page .footer-inner {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  padding-bottom: 30px;
+}
+
+.home-page .footer h3 {
+  font-size: 25px;
+  margin-bottom: 12px;
+}
+
+.home-page .footer p,
+.home-page .footer-info span {
+  color: #d2dacc;
+  font-size: 13px;
+}
+
+.home-page .footer-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+}
+
+.home-page .copyright {
+  border-top: 1px solid #ffffff22;
+  padding: 20px 0;
+  font-size: 12px;
+  color: #d2dacc;
+}
+
+/* RESPONSIVE TABLET */
+
+@media (max-width: 900px) {
+  .home-page .hero-grid {
+    gap: 20px;
+  }
+
+  .home-page .hero-visual {
+    min-height: 380px;
+  }
+
+  .home-page .nadia-hero {
+    height: 350px;
+  }
+
+  .home-page .steps-grid {
+    gap: 12px;
+  }
+
+  .home-page .step-card {
+    padding: 20px;
+  }
+}
+
+/* RESPONSIVE MOBILE */
+
+@media (max-width: 680px) {
+  .home-page .container {
+    width: calc(100% - 32px);
+  }
+
+  .home-page .nav-inner {
+    min-height: 65px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-block: 10px;
+  }
+
+  .home-page .brand {
+    font-size: 20px;
+  }
+
+  .home-page .brand-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .home-page nav {
+    gap: 14px;
+    font-size: 11px;
+  }
+
+  .home-page .hero {
+    padding: 40px 0 28px;
+  }
+
+  .home-page .hero-grid,
+  .home-page .mission-inner,
+  .home-page .module-grid,
+  .home-page .steps-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page .hero h1 {
+    font-size: clamp(36px, 9vw, 48px);
+    letter-spacing: -1.5px;
+  }
+
+  .home-page .hero-description {
+    font-size: 15px;
+    margin-top: 16px;
+  }
+
+  .home-page .hero-actions {
+    margin-top: 22px;
+  }
+
+  .home-page .hero-actions .btn {
+    flex: 1 1 145px;
+  }
+
+  .home-page .hero-visual {
+    min-height: 340px;
+  }
+
+  .home-page .nadia-hero {
+    height: 320px;
+  }
+
+  .home-page .character-circle {
+    max-width: 280px;
+    bottom: 20px;
+  }
+
+  .home-page .speech-card {
+    top: 15px;
+    padding: 10px 14px;
+  }
+
+  .home-page .speech-card strong {
+    font-size: 15px;
+  }
+
+  .home-page .mission-inner {
+    gap: 22px;
+  }
+
+  .home-page .shopping-items {
+    gap: 8px;
+  }
+
+  .home-page .shopping-item {
+    padding: 12px 4px;
+  }
+
+  .home-page .section {
+    padding-block: 44px;
+  }
+
+  .home-page .module-image {
+    height: 210px;
+  }
+
+  .home-page .module-content {
+    padding: 22px;
+  }
+
+  .home-page .final-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+    gap: 16px;
+  }
+
+  .home-page .final-banner img {
+    height: 180px;
+    width: 150px;
+  }
+
+  .home-page .footer-inner {
+    flex-direction: column;
+  }
+}
+
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+  .home-page *,
+  .home-page *::before,
+  .home-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .home-page .btn:hover {
+    transform: none;
+  }
+}
