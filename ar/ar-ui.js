@@ -3,11 +3,13 @@ const $ = id => document.getElementById(id);
 let activeId = null;
 
 (async () => {
-  await PasarBasa.data.loadVocab();
+  try {
+    await PasarBasa.data.loadVocab();
+  } catch {
+    showHint('Kosakata gagal dimuat. Periksa koneksi dan muat ulang halaman.');
+  }
   updateBar();
 })();
-
-$('btn-start').onclick = () => { $('intro').hidden = true; window.dispatchEvent(new CustomEvent('ar:start')); };
 
 window.addEventListener('ar:found', e => {
   activeId = e.detail.id;
@@ -37,11 +39,24 @@ window.addEventListener('ar:pin-error', e => showHint(e.detail.message));
 window.addEventListener('ar:learned', updateBar);
 window.addEventListener('ar:learning-error', () => showHint('Kartu belajar gagal dimuat. Muat ulang halaman untuk mencoba kembali.'));
 window.addEventListener('ar:hint', () => showHint('Belum terdeteksi. Dekatkan kartu 20–40 cm, pastikan terang dan tanpa pantulan.'));
-window.addEventListener('ar:error', () => showHint('Kamera tidak bisa diakses. Izinkan kamera di pengaturan browser lalu muat ulang halaman.'));
+window.addEventListener('ar:model-error', e => {
+  if (activeId === e.detail.id) showHint('Model gagal dimuat. Periksa koneksi, jauhkan kartu, lalu pindai kembali.');
+});
 
-function enable(on) { ['btn-info','btn-audio','btn-rot-l','btn-rot-r','btn-plus','btn-minus'].forEach(id => $(id).disabled = !on); }
+function enable(on) {
+  ['btn-info','btn-rot-l','btn-rot-r','btn-plus','btn-minus'].forEach(id => $(id).disabled = !on);
+  $('btn-audio').disabled = !on || !PasarBasa.audio.isEnabled();
+}
 function showHint(t) { $('hint').textContent = t; $('hint').hidden = false; }
-function openPanel(html) { $('panel').innerHTML = '<button class="close">✕</button>' + html; $('panel').hidden = false; $('panel').querySelector('.close').onclick = () => $('panel').hidden = true; }
+function openPanel(html) {
+  PasarBasa.audio.stop();
+  $('panel').innerHTML = '<button class="close">✕</button>' + html;
+  $('panel').hidden = false;
+  $('panel').querySelector('.close').onclick = () => {
+    PasarBasa.audio.stop();
+    $('panel').hidden = true;
+  };
+}
 
 $('btn-info').onclick = () => {
   if (!activeId) return;
@@ -77,7 +92,13 @@ function showSummary() {
   $('pb-reset').onclick = () => { PasarBasa.progress.reset(); updateBar(); PasarBasa.learningCard.refresh(); $('panel').hidden = true; };
 }
 
-$('btn-sound').onclick = () => { PasarBasa.audio.setEnabled(!PasarBasa.audio.isEnabled()); $('btn-sound').textContent = PasarBasa.audio.isEnabled() ? '🔊' : '🔇'; };
+$('btn-sound').onclick = () => {
+  const enabled = !PasarBasa.audio.isEnabled();
+  PasarBasa.audio.setEnabled(enabled);
+  $('btn-sound').textContent = enabled ? '🔊' : '🔇';
+  $('btn-sound').setAttribute('aria-pressed', String(enabled));
+  $('btn-audio').disabled = !enabled || !activeId;
+};
 
 function updateBar() {
   const done = PasarBasa.progress.get().done;
