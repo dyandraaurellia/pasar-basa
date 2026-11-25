@@ -1,6 +1,6 @@
 // Pemilik: Maulidya — hotspot kosakata, dialog, misi, hasil (KF-VR-07..16).
 (() => {
-  const { viewer } = PasarBasaVR;
+  const { viewer, locations, showFirstHelp, updateGuidance } = PasarBasaVR;
   const { data, audio, progress } = PasarBasa;
   const byId = (id) => document.getElementById(id);
   const panorama = byId("panorama");
@@ -12,18 +12,14 @@
   const art = byId("vr-seller-art");
   const responseSlot = byId("vr-response-slot");
   const glossary = byId("vr-glossary");
+  const audioToggle = byId("vr-audio-toggle");
+  const questionReplay = byId("vr-play-question");
+  const audioStatus = byId("vr-audio-status");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const missionKey = "pasarbasa:vr-mission";
   // Tambahkan ID di sini bersama berkas MP3 yang dirujuk di kosakata.json.
   const availablePronunciations = new Set();
   let activeConversation = null;
-
-  const locations = {
-    pintu: "Pintu Masuk",
-    lorong: "Lorong Pasar",
-    "kios-sayur": "Kios Sayur",
-    "kios-buah": "Kios Buah",
-  };
 
   const items = {
     cabai: { label: "Cabai", term: "lombok", seller: "bu-sari", quantity: 1 },
@@ -33,8 +29,8 @@
   const itemIds = Object.keys(items);
 
   const sellers = {
-    "bu-sari": { scene: "kios-sayur", pitch: -4.58, yaw: -0.80, id: "bu-sari", seller: "Bu Sari", scenario: "beli-cabai" },
-    "pak-budi": { scene: "kios-buah", pitch: -19.11, yaw: 15.12, id: "pak-budi", seller: "Pak Budi", scenario: "beli-pisang" },
+    "bu-sari": { scene: "kios-sayur", pitch: -4.58, yaw: -0.80, id: "bu-sari", seller: "Bu Sari", label: "Bicara dengan Bu Sari", scenario: "beli-cabai" },
+    "pak-budi": { scene: "kios-buah", pitch: -19.11, yaw: 15.12, id: "pak-budi", seller: "Pak Budi", label: "Bicara dengan Pak Budi", scenario: "beli-pisang" },
   };
 
   const practicedVocabulary = {
@@ -43,10 +39,10 @@
   };
 
   const spots = [
-    { scene: "kios-sayur", pitch: -23.12, yaw: -45.18, id: "cabai", icon: "🌶️", label: "Belajar cabai" },
-    { scene: "kios-sayur", pitch: -29.55, yaw: -28.77, id: "tomat", icon: "🍅", label: "Belajar tomat" },
-    { scene: "kios-buah", pitch: -21.83, yaw: 39.76, id: "pisang", icon: "🍌", label: "Belajar pisang" },
-    ...Object.values(sellers).map((spot) => ({ ...spot, icon: "💬", label: "Bicara dengan " + spot.seller })),
+    { scene: "kios-sayur", pitch: -23.12, yaw: -45.18, id: "cabai", label: "Belajar cabai" },
+    { scene: "kios-sayur", pitch: -29.55, yaw: -28.77, id: "tomat", label: "Belajar tomat" },
+    { scene: "kios-buah", pitch: -21.83, yaw: 39.76, id: "pisang", label: "Belajar pisang" },
+    ...Object.values(sellers),
   ];
 
   const lessons = {
@@ -198,6 +194,7 @@
       saveMission();
       story.close();
       panorama.focus({ preventScroll: true });
+      showFirstHelp();
     };
   }
 
@@ -211,11 +208,17 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "vr-hotspot-button";
-      button.textContent = spot.icon;
+      button.textContent = spot.seller ? "💬" : "📖";
+      button.dataset.hotspot = spot.id;
       button.title = spot.label;
       button.setAttribute("aria-label", spot.label);
       button.setAttribute("aria-haspopup", "dialog");
-      if (spot.seller) button.dataset.seller = spot.seller;
+      if (spot.seller) {
+        button.dataset.seller = spot.seller;
+        button.dataset.label = spot.seller;
+      } else {
+        button.dataset.label = spot.label;
+      }
       button.onclick = () => {
         if (spot.seller) openConversation(spot, button);
         else openVocab(spot.id);
@@ -323,6 +326,19 @@
       : turn.words;
     byId("vr-glossary-words").innerHTML = wordRows(words);
     renderResponses(session, focusTarget);
+    playDialogueAudio(vrDialogueAudio.clips(spot.id, transaction.turn).question);
+  }
+
+  function playDialogueAudio(...paths) {
+    vrDialogueAudio.play(paths, (message) => { audioStatus.textContent = message; });
+  }
+
+  function updateAudioControls() {
+    const enabled = audio.isEnabled();
+    audioToggle.setAttribute("aria-pressed", String(enabled));
+    audioToggle.textContent = enabled ? "Aktif" : "Mati";
+    questionReplay.disabled = !enabled;
+    responseSlot.querySelectorAll("[data-vr-replay]").forEach((button) => { button.disabled = !enabled; });
   }
 
   function renderResponses(session, focusTarget) {
@@ -331,6 +347,7 @@
     const turnIndex = transaction.turn;
     const turns = vrTransactions[spot.id];
     const turn = turns[turnIndex];
+    const clips = vrDialogueAudio.clips(spot.id, turnIndex);
     const selected = transaction.selected;
     const answered = selected !== null;
     const correct = selected === (turn.quantity ?? turn.answer);
@@ -356,7 +373,10 @@
           '<strong>' + (correct ? "Tepat" : "Kurang tepat") + '</strong>' + feedback +
           (correct ? '<p class="vr-seller-reply"><strong>' + spot.seller + '</strong><span lang="jv">' + turn.reply[0] +
             '</span><small>' + turn.reply[1] + '</small></p>' : '') +
-        '</div><button class="pb-next" id="vr-next-turn" type="button" aria-describedby="vr-turn-feedback">' +
+        '</div>' + (correct ? '<div class="vr-replays" role="group" aria-label="Putar ulang rekaman jawaban">' +
+          '<button type="button" data-vr-replay="answer">Putar jawaban Nadia</button>' +
+          '<button type="button" data-vr-replay="reply">Putar respons penjual</button></div>' : '') +
+        '<button class="pb-next" id="vr-next-turn" type="button" aria-describedby="vr-turn-feedback">' +
           (correct ? (lastTurn ? "Selesaikan Transaksi" : "Lanjutkan Percakapan") : "Coba Lagi") + "</button>"
       : '') + '</div>';
 
@@ -368,7 +388,13 @@
       saveMission();
       progress.recordDialog({ id: spot.scenario, teks: text, benar: isCorrect });
       renderResponses(session, "#vr-next-turn");
+      if (isCorrect) playDialogueAudio(clips.answer, clips.reply);
     }
+
+    responseSlot.querySelectorAll("[data-vr-replay]").forEach((button) => {
+      button.onclick = () => playDialogueAudio(clips[button.dataset.vrReplay]);
+    });
+    updateAudioControls();
 
     if (turn.quantity) {
       const less = responseSlot.querySelector('[data-delta="-1"]');
@@ -427,6 +453,7 @@
     if (!activeConversation) return;
     const { trigger, restoreOrientation } = activeConversation;
     activeConversation = null;
+    vrDialogueAudio.stop();
     viewer.stopMovement();
     panorama.classList.remove("vr-conversing");
     conversation.close();
@@ -436,6 +463,7 @@
     if (restoreOrientation) viewer.startOrientation();
     const focus = trigger?.isConnected && getComputedStyle(trigger).visibility === "visible" ? trigger : panorama;
     focus.focus({ preventScroll: true });
+    updateBar();
   }
 
   function finishTransaction(spot) {
@@ -447,7 +475,6 @@
     saveMission();
     markShared("dialog:" + spot.scenario);
     closeConversation();
-    updateBar();
     if (canStartQuiz()) {
       showShoppingList();
       return;
@@ -461,7 +488,7 @@
 
   function nextSeller() {
     const localSeller = Object.values(sellers).find((spot) => spot.scene === viewer.getScene());
-    if (localSeller && !mission.transactions[localSeller.id].completed && hasTurnToResume(localSeller)) return localSeller;
+    if (localSeller && !mission.transactions[localSeller.id].completed) return localSeller;
     return mission.transactions["bu-sari"].completed ? sellers["pak-budi"] : sellers["bu-sari"];
   }
 
@@ -472,15 +499,34 @@
 
   function nextObjective() {
     if (canShowResults()) return "Lihat hasil misi.";
-    if (canStartQuiz()) return mission.quiz.started ? "Lanjutkan tantangan bahasa." : "Siap untuk tantangan bahasa.";
+    if (canStartQuiz()) return mission.quiz.started ? "Lanjutkan tantangan bahasa." : "Mulai tantangan bahasa.";
 
+    const scene = viewer.getScene();
+    if (scene === "pintu") return "Masuk ke lorong pasar.";
+    if (scene === "lorong") return "Menuju kios sayur.";
     const spot = nextSeller();
-    if (viewer.getScene() !== spot.scene) {
+    if (scene !== spot.scene) {
       return spot.id === "bu-sari" ? "Temukan kios sayur." : "Lanjutkan ke kios buah.";
     }
     if (hasTurnToResume(spot)) return "Lanjutkan percakapan dengan " + spot.seller + ".";
-    const learnFirst = spot.id === "bu-sari" && (!mission.learned.includes("cabai") || !mission.learned.includes("tomat"));
-    return learnFirst ? "Pelajari cabai dan tomat, atau ajak Bu Sari bicara." : "Ajak " + spot.seller + " bicara.";
+    if (spot.id === "pak-budi") return "Bicara dengan Pak Budi untuk membeli tiga pisang.";
+    return nextVegetable()
+      ? "Pelajari cabai dan tomat, lalu bicara dengan Bu Sari."
+      : "Ajak Bu Sari bicara.";
+  }
+
+  function nextVegetable() {
+    return ["cabai", "tomat"].find((id) => !mission.learned.includes(id));
+  }
+
+  function guidanceSpot() {
+    if (canStartQuiz()) return null;
+    const seller = nextSeller();
+    if (seller.id === "bu-sari" && viewer.getScene() === seller.scene && !hasTurnToResume(seller)) {
+      const id = nextVegetable();
+      if (id) return spots.find((spot) => spot.id === id);
+    }
+    return seller;
   }
 
   function showShoppingList() {
@@ -593,6 +639,7 @@
         '<a class="vr-btn vr-secondary" href="../index.html">Kembali ke Beranda</a>' +
       '</div></div><img class="vr-nadia" src="../assets/nadia.webp" alt="" width="600" height="800"></div>', "result");
     byId("pb-reset").onclick = () => {
+      vrDialogueAudio.stop();
       mission = freshMission();
       saveMission();
       window.location.reload();
@@ -604,11 +651,25 @@
     byId("vr-mission-count").textContent = count + "/" + itemIds.length;
     byId("vr-mission-meter").value = count;
     byId("vr-next-goal").textContent = nextObjective();
+    updateGuidance(guidanceSpot());
   }
 
   byId("mission-bar").onclick = showShoppingList;
   byId("vr-close-panel").onclick = () => panel.close();
   byId("vr-end-conversation").onclick = closeConversation;
+  questionReplay.onclick = () => {
+    if (!activeConversation) return;
+    const id = activeConversation.spot.id;
+    playDialogueAudio(vrDialogueAudio.clips(id, mission.transactions[id].turn).question);
+  };
+  audioToggle.onclick = () => {
+    audio.setEnabled(!audio.isEnabled());
+    if (!audio.isEnabled()) {
+      vrDialogueAudio.stop();
+      audioStatus.textContent = "";
+    }
+    updateAudioControls();
+  };
   story.addEventListener("cancel", (event) => {
     if (story.dataset.phase === "intro" || story.dataset.phase === "briefing") event.preventDefault();
   });
@@ -621,7 +682,6 @@
     if (panel.open && panel.dataset.kind === "vocab") panel.close();
     mission.scene = id;
     saveMission();
-    byId("vr-location").textContent = locations[id];
     updateBar();
   });
 
@@ -637,7 +697,6 @@
     }
   }
 
-  byId("vr-location").textContent = locations[viewer.getScene()];
   updateBar();
   if (!mission.introSeen) showIntroduction();
   else if (!mission.briefingDone) showBriefing();
