@@ -4,6 +4,11 @@ window.PasarBasa = window.PasarBasa || {};
   const card = document.getElementById('learning-card');
   const byId = id => document.getElementById(id);
   const listenButtons = Array.from(card.querySelectorAll('[data-register]'));
+  const cardImages = {
+    cabai: 'assets/markers/kartu-cabai.png',
+    tomat: 'assets/markers/Learning Card AR.png',
+    pisang: 'assets/markers/kartu-pisang.png',
+  };
   let currentId = null;
   let trackedId = null;
   let request = 0;
@@ -46,8 +51,13 @@ window.PasarBasa = window.PasarBasa || {};
       currentId = id;
       byId('learning-name').textContent = vocab.indonesia;
       byId('learning-ngoko').textContent = vocab.ngoko || vocab.jawa;
+      const pronunciation = vocab.jawa[0].toUpperCase() + vocab.jawa.slice(1);
+      const listen = card.querySelector('[data-register="ngoko"]');
+      listen.setAttribute('aria-label', `Dengarkan ${pronunciation} (ngoko)`);
+      listen.title = listen.getAttribute('aria-label');
+      listen.disabled = !vocab.audio || !PasarBasa.audio.isEnabled();
       byId('learning-krama').textContent = vocab.krama || 'Belum tersedia';
-      byId('learning-image').src = (window.BASE || '') + vocab.image;
+      byId('learning-image').src = (window.BASE || '') + (vocab.image || cardImages[id]);
       byId('learning-image').alt = 'Ilustrasi ' + vocab.indonesia;
       byId('learning-note').textContent = vocab.ngoko === vocab.krama
         ? 'Kata benda ini memiliki bentuk yang sama dalam ngoko dan krama.'
@@ -68,6 +78,7 @@ window.PasarBasa = window.PasarBasa || {};
   });
   window.addEventListener('ar:lost', e => {
     if (trackedId === e.detail.id) trackedId = null;
+    if (currentId === e.detail.id) PasarBasa.audio.stop();
     if (currentId) updateTracking();
   });
   byId('learning-close').onclick = () => { ++request; card.hidden = true; PasarBasa.audio.stop(); };
@@ -84,6 +95,9 @@ window.PasarBasa = window.PasarBasa || {};
     const { id, register, state, message } = e.detail;
     if (id && id !== currentId) return;
     listenButtons.forEach(button => {
+      if (button.dataset.register === 'ngoko' && currentId) {
+        button.disabled = !PasarBasa.audio.isEnabled() || !PasarBasa.data.getVocab(currentId)?.audio;
+      }
       const playing = state === 'playing' && button.dataset.register === register;
       button.classList.toggle('is-playing', playing);
       button.setAttribute('aria-pressed', String(playing));

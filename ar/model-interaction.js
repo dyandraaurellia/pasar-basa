@@ -1,7 +1,7 @@
 // Mengunci salinan model terhadap kamera, bukan membuat jangkar pada ruang nyata.
 window.PasarBasa = window.PasarBasa || {};
 (function () {
-  const THREE = AFRAME.THREE;
+  const THREE = window.AFRAME?.THREE;
   const scene = document.getElementById('scene');
   const stage = document.getElementById('model-stage');
   const byId = id => document.getElementById(id);

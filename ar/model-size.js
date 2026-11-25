@@ -1,6 +1,6 @@
 // Ukuran terpanjang model disamakan dalam satuan marker (lebar kartu = 1).
 // Penskalaan seragam mempertahankan proporsi model asli.
-AFRAME.registerComponent('fit-model', {
+window.AFRAME?.registerComponent('fit-model', {
   schema: { size: { type: 'number', default: 0.7 } },
 
   init: function () {

@@ -595,26 +595,91 @@
 #vr-panel .vr-action:hover { background: var(--vr-dark); }
 .vr-vocab-meaning { color: #66523b; }
 
-.vr-example {
-  padding: 8px 12px;
-  border-left: 3px solid var(--vr-gold);
-  border-radius: 6px;
-  background: #fffaf1;
-}
-
-#vr-panel .vr-example p { margin: 2px 0 0; }
 .vr-words, .vr-registers { margin: 4px 0 8px; font-size: 0.88rem; }
 .vr-words div, .vr-registers div { display: grid; grid-template-columns: minmax(70px, 1fr) 2.4fr; gap: 8px; }
 .vr-words dt, .vr-registers dt { color: var(--vr-dark); font-weight: 700; }
 .vr-words dd, .vr-registers dd { margin: 0; }
-.vr-audio-note { color: #66523b; font-size: 0.82rem; }
 .vr-activity-list { list-style: none; padding: 0; margin: 10px 0; font-size: 0.9rem; }
 .vr-activity-list li { display: flex; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px solid #ded5c4; }
 .vr-activity-list [data-complete="true"] { color: #32623a; }
 .vr-activity-list small { display: block; color: #66523b; }
 
 .vr-actions, .vr-pronunciation { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.vr-pronunciation { margin: 10px 0; }
+
+#vr-panel[data-kind="vocab"] {
+  width: min(calc(100% - var(--vr-left) - var(--vr-right)), 540px);
+  padding: 0;
+  font-family: system-ui, sans-serif;
+}
+
+#vr-panel[data-kind="vocab"] .vr-panel-close {
+  position: sticky;
+  top: 10px;
+  z-index: 2;
+  display: flex;
+  float: none;
+  width: 44px;
+  margin: 0 10px -44px auto;
+}
+
+.vr-vocab-header {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px 10px;
+  padding: 18px 62px 15px 18px;
+  border-bottom: 1px solid #ddd2ba;
+  background: #fffaf1;
+}
+
+.vr-vocab-header img {
+  box-sizing: border-box;
+  width: 56px;
+  height: 56px;
+  padding: 5px;
+  border: 1px solid #e5d6ba;
+  border-radius: 12px;
+  background: var(--vr-cream);
+}
+
+#vr-panel .vr-vocab-names h2 { font: 780 clamp(1.55rem, 4vw, 2.15rem)/1.12 system-ui, sans-serif; }
+#vr-panel .vr-vocab-meaning { margin: 3px 0 0; color: #66523b; font-size: 0.82rem; }
+.vr-vocab-register { color: var(--vr-forest); font-size: 0.77rem; font-weight: 700; }
+.vr-pronunciation { flex-wrap: nowrap; gap: 6px; }
+.vr-pronunciation .vr-btn { width: 48px; min-height: 48px; padding: 0; }
+.vr-pronunciation svg { flex-shrink: 0; }
+#vr-pronunciation { background: var(--vr-forest); color: var(--vr-cream); }
+#vr-pronunciation:hover:not(:disabled), #vr-pronunciation.is-playing { background: var(--vr-dark); }
+#vr-pronunciation.is-playing { box-shadow: inset 0 0 0 2px var(--vr-gold); }
+#vr-pronunciation:disabled { opacity: 0.5; }
+#vr-vocab-toggle { flex-direction: column; gap: 1px; font-size: 0.63rem; }
+#vr-vocab-toggle svg { width: 19px; height: 19px; }
+#vr-vocab-toggle[aria-pressed="false"] { background: #eadcc5; }
+.vr-vocab-audio-status { grid-column: 2 / -1; color: #66523b; font-size: 0.78rem; }
+.vr-vocab-audio-status:empty { position: absolute; }
+
+.vr-vocab-body { display: grid; gap: 15px; padding: 15px 18px; }
+#vr-panel .vr-vocab-body h3 { margin: 0 0 4px; font-size: 1rem; }
+#vr-panel .vr-example-meaning { margin: 0 0 8px; color: #66523b; font-size: 0.88rem; }
+.vr-vocab-body .vr-registers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.vr-vocab-body .vr-registers div { display: grid; grid-template-columns: 1fr; align-content: start; gap: 3px; padding: 9px; border-radius: 9px; }
+.vr-register-krama { background: #e4eddf; }
+.vr-register-ngoko { background: #eee1c9; }
+.vr-vocab-body .vr-registers dt { font-size: 0.75rem; }
+.vr-vocab-body .vr-words { margin: 0; }
+.vr-vocab-body .vr-words div { padding: 4px 0; border-bottom: 1px solid #e2d7c4; }
+.vr-vocab-tip { padding-left: 9px; border-left: 3px solid var(--vr-gold); }
+#vr-panel .vr-vocab-tip p { margin: 0; font-size: 0.88rem; }
+.vr-vocab-actions { padding: 12px 18px 15px; border-top: 1px solid #ddd2ba; }
+.vr-vocab-actions .vr-btn { min-height: 48px; }
+
+@media (max-width: 365px) {
+  .vr-vocab-header { grid-template-columns: 48px minmax(0, 1fr); padding: 14px 56px 12px 14px; }
+  .vr-vocab-header img { width: 48px; height: 48px; }
+  .vr-pronunciation { grid-column: 2; }
+  .vr-vocab-body { padding-inline: 14px; }
+  .vr-vocab-actions { display: grid; padding-inline: 14px; }
+}
 
 .vr-btn.vr-secondary {
   border-color: #a2947f;

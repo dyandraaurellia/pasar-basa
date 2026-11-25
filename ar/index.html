@@ -2,6 +2,7 @@
 <html lang="id"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AR Kartu Pasar Basa</title>
+<link rel="icon" href="data:,">
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <script src="model-size.js"></script>
@@ -14,7 +15,7 @@
   <div id="topbar">
     <a class="ar-btn" href="../index.html">🏠</a>
     <div id="mission-bar"></div>
-    <button class="ar-btn" id="btn-sound">🔊</button>
+    <button class="ar-btn" id="btn-sound" type="button" aria-label="Audio AR" aria-pressed="true">🔊</button>
   </div>
   <div id="badge">Arahkan kamera ke kartu</div>
   <div id="hint" hidden></div>
@@ -34,7 +35,7 @@
       <div class="learning-word"><div><span class="learning-label">NGOKO</span><strong id="learning-ngoko"></strong></div>
         <button class="learning-listen" type="button" data-register="ngoko" aria-label="Dengarkan pelafalan ngoko"><span aria-hidden="true">♫</span> Dengarkan</button></div>
       <div class="learning-word"><div><span class="learning-label">KRAMA</span><strong id="learning-krama"></strong></div>
-        <button class="learning-listen" type="button" data-register="krama" aria-label="Dengarkan pelafalan krama"><span aria-hidden="true">♫</span> Dengarkan</button></div>
+        <button class="learning-listen" type="button" data-register="krama" aria-label="Rekaman krama belum tersedia" disabled>Belum direkam</button></div>
     </div>
     <p id="learning-note" class="learning-note"></p>
     <p id="learning-audio-status" class="learning-audio-status" role="status" aria-live="polite">Tekan Dengarkan untuk memutar pelafalan.</p>
@@ -60,24 +61,21 @@
     <div class="card">
       <h2>AR Kartu Pasar Basa</h2>
       <ol><li>Siapkan kartu cabai, tomat, atau pisang.</li><li>Izinkan akses kamera.</li><li>Arahkan kamera ke kartu (20–40 cm, cahaya cukup).</li><li>Tekan Kunci objek agar model tetap di layar saat kartu disimpan. Pilih Geser atau Putar, lalu seret layar.</li><li>Selesaikan misi: 3 kosakata + 1 dialog.</li></ol>
-      <button class="ar-btn primary" id="btn-start">Mulai AR</button>
+      <p id="ar-start-status" role="status">Menyiapkan AR...</p>
+      <button class="ar-btn primary" id="btn-start" type="button" disabled>Mulai AR</button>
+      <a class="ar-btn" id="btn-ar-retry" href="index.html">Muat ulang AR</a>
     </div>
   </div>
 </div>
 
 <!-- ===== Wyena: scene AR (jangan diubah oleh Zaidan) ===== -->
-<a-scene id="scene" mindar-image="imageTargetSrc: ../assets/markers/targets.mind; uiScanning: no; uiLoading: yes; autoStart: false;"
+<a-scene id="scene" mindar-image="imageTargetSrc: ../assets/markers/targets.mind; uiScanning: no; uiLoading: no; uiError: no; autoStart: false;"
          color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights"
          vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
-  <a-assets>
-    <a-asset-item id="m-cabai"  src="../assets/models/cabai.glb"></a-asset-item>
-    <a-asset-item id="m-tomat"  src="../assets/models/tomat.glb"></a-asset-item>
-    <a-asset-item id="m-pisang" src="../assets/models/pisang.glb"></a-asset-item>
-  </a-assets>
   <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
-  <a-entity id="t-cabai"  mindar-image-target="targetIndex: 0"><a-gltf-model id="obj-cabai"  src="#m-cabai"  fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-gltf-model></a-entity>
-  <a-entity id="t-tomat"  mindar-image-target="targetIndex: 1"><a-gltf-model id="obj-tomat"  src="#m-tomat"  fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-gltf-model></a-entity>
-  <a-entity id="t-pisang" mindar-image-target="targetIndex: 2"><a-gltf-model id="obj-pisang" src="#m-pisang" fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-gltf-model></a-entity>
+  <a-entity id="t-cabai"  mindar-image-target="targetIndex: 0"><a-entity id="obj-cabai"  fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-entity></a-entity>
+  <a-entity id="t-tomat"  mindar-image-target="targetIndex: 1"><a-entity id="obj-tomat"  fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-entity></a-entity>
+  <a-entity id="t-pisang" mindar-image-target="targetIndex: 2"><a-entity id="obj-pisang" fit-model="size: 0.7" scale="1 1 1" position="0 0 0.1"></a-entity></a-entity>
 </a-scene>
 
 <script>window.BASE = '../';</script>

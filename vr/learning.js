@@ -17,9 +17,14 @@
   const audioStatus = byId("vr-audio-status");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   const missionKey = "pasarbasa:vr-mission";
-  // Tambahkan ID di sini bersama berkas MP3 yang dirujuk di kosakata.json.
-  const availablePronunciations = new Set();
   let activeConversation = null;
+
+  function volumeIcon(muted = false) {
+    return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+      '<path d="M11 5 6 9H3v6h3l5 4V5Z"/>' + (muted
+        ? '<path d="m16 9 5 6m0-6-5 6"/>'
+        : '<path d="M15.5 8.5a5 5 0 0 1 0 7m3-10a9.2 9.2 0 0 1 0 13"/>') + '</svg>';
+  }
 
   const items = {
     cabai: { label: "Cabai", term: "lombok", seller: "bu-sari", quantity: 1 },
@@ -228,6 +233,7 @@
   }, spot.scene));
 
   function showPanel(html, kind = "mission") {
+    if (panel.dataset.kind === "vocab") audio.stop();
     panel.dataset.kind = kind;
     panelContent.innerHTML = html;
     if (!panel.open) panel.showModal();
@@ -237,7 +243,7 @@
   async function openVocab(id) {
     const lesson = lessons[id];
     const seller = sellers[items[id].seller];
-    showPanel('<h2 id="vr-panel-title">Kosakata pasar</h2><p role="status">Memuat kosakata…</p>', "vocab");
+    showPanel('<div class="vr-vocab-body"><h2 id="vr-panel-title">Kosakata pasar</h2><p role="status">Memuat kosakata…</p></div>', "vocab");
     const status = panel.querySelector('[role="status"]');
     try {
       await data.loadVocab();
@@ -253,27 +259,57 @@
     }
 
     const learned = mission.learned.includes(id);
-    const hasAudio = Boolean(vocab.audio && availablePronunciations.has(id));
-    showPanel(
-      '<h2 id="vr-panel-title" lang="jv"></h2><p class="vr-vocab-meaning"></p>' +
-      '<p><strong>Daftar belanja:</strong> ' + items[id].label + ". " + lesson.use + '</p>' +
-      '<div class="vr-example"><strong lang="jv">' + lesson.sentence + "</strong><p>" + lesson.meaning + '</p></div>' +
-      '<h3>Arti kata</h3><dl class="vr-words">' + wordRows(lesson.words) + '</dl>' +
-      '<h3>Ngoko dan krama</h3><dl class="vr-registers">' +
-        '<div><dt>Ngoko</dt><dd lang="jv">' + lesson.ngoko + '</dd></div>' +
-        '<div><dt>Krama</dt><dd lang="jv">' + lesson.sentence + '</dd></div>' +
-      '</dl>' +
-      '<div class="vr-pronunciation"><button class="vr-btn vr-secondary" id="vr-pronunciation" type="button"' +
-        (hasAudio ? '' : ' disabled aria-describedby="vr-audio-note"') + '>Dengarkan pelafalan</button>' +
-        (hasAudio ? '' : '<span class="vr-audio-note" id="vr-audio-note">Rekaman belum tersedia.</span>') + '</div>' +
-      '<div class="vr-actions"><button class="vr-btn vr-action" id="pb-learned" type="button"' + (learned ? " disabled" : "") +
-      '>Sudah Dipelajari</button><button class="vr-btn vr-secondary" id="vr-practice" type="button">Praktik Bersama Penjual</button></div>', "vocab");
+    const hasAudio = Boolean(vocab.audio);
+    showPanel(`
+      <header class="vr-vocab-header">
+        <img src="../assets/illustrations/${id}.svg" width="56" height="56" alt="">
+        <div class="vr-vocab-names">
+          <span class="vr-vocab-register">Ngoko</span>
+          <h2 id="vr-panel-title" lang="jv"></h2>
+          <p class="vr-vocab-meaning"></p>
+        </div>
+        <div class="vr-pronunciation" role="group" aria-label="Kontrol pelafalan">
+          <button class="vr-btn" id="vr-pronunciation" type="button" ${hasAudio ? '' : 'disabled'}>${volumeIcon()}</button>
+          <button class="vr-btn vr-secondary" id="vr-vocab-toggle" type="button" aria-label="Audio kosakata"></button>
+        </div>
+        <span id="vr-audio-note" class="vr-vocab-audio-status" role="status">${hasAudio ? '' : 'Rekaman belum tersedia.'}</span>
+      </header>
+      <div class="vr-vocab-body">
+        <section>
+          <h3>Contoh percakapan</h3>
+          <p class="vr-example-meaning">${lesson.meaning}</p>
+          <dl class="vr-registers" aria-label="Perbandingan krama dan ngoko">
+            <div class="vr-register-krama"><dt>Krama</dt><dd lang="jv">${lesson.sentence}</dd></div>
+            <div class="vr-register-ngoko"><dt>Ngoko</dt><dd lang="jv">${lesson.ngoko}</dd></div>
+          </dl>
+        </section>
+        <section>
+          <h3>Arti kata</h3>
+          <dl class="vr-words">${wordRows(lesson.words)}</dl>
+        </section>
+        <section class="vr-vocab-tip">
+          <h3>Tips belanja</h3>
+          <p>${lesson.use}</p>
+        </section>
+      </div>
+      <footer class="vr-actions vr-vocab-actions">
+        <button class="vr-btn vr-action" id="pb-learned" type="button" ${learned ? 'disabled' : ''}>Sudah Dipelajari</button>
+        <button class="vr-btn vr-secondary" id="vr-practice" type="button">Praktik Bersama Penjual</button>
+      </footer>`, "vocab");
 
-    byId("vr-panel-title").textContent = items[id].term;
-    panelContent.querySelector(".vr-vocab-meaning").textContent = id === "pisang"
-      ? "Gedhang (ngoko) · pisang (krama)"
-      : vocab.indonesia;
-    byId("vr-pronunciation").onclick = () => audio.play(id);
+    const word = vocab.jawa[0].toUpperCase() + vocab.jawa.slice(1);
+    byId("vr-panel-title").textContent = word;
+    panelContent.querySelector(".vr-vocab-meaning").textContent = "Bahasa Indonesia · " + vocab.indonesia[0].toUpperCase() + vocab.indonesia.slice(1);
+    const pronunciation = byId("vr-pronunciation");
+    pronunciation.title = hasAudio ? `Dengarkan ${word} (ngoko)` : "Rekaman belum tersedia";
+    pronunciation.setAttribute("aria-label", pronunciation.title);
+    if (hasAudio) pronunciation.dataset.available = "true";
+    pronunciation.onclick = () => {
+      vrDialogueAudio.stop();
+      audio.play(id);
+    };
+    byId("vr-vocab-toggle").onclick = toggleAudio;
+    updateAudioControls();
     byId("pb-learned").onclick = (event) => {
       if (mission.learned.includes(id)) return;
       mission.learned.push(id);
@@ -330,6 +366,7 @@
   }
 
   function playDialogueAudio(...paths) {
+    audio.stop();
     vrDialogueAudio.play(paths, (message) => { audioStatus.textContent = message; });
   }
 
@@ -339,6 +376,14 @@
     audioToggle.textContent = enabled ? "Aktif" : "Mati";
     questionReplay.disabled = !enabled;
     responseSlot.querySelectorAll("[data-vr-replay]").forEach((button) => { button.disabled = !enabled; });
+    const vocabToggle = byId("vr-vocab-toggle");
+    if (vocabToggle) {
+      vocabToggle.setAttribute("aria-pressed", String(enabled));
+      vocabToggle.title = enabled ? "Bisukan audio kosakata" : "Aktifkan audio kosakata";
+      vocabToggle.innerHTML = volumeIcon(enabled) + `<span aria-hidden="true">${enabled ? "Bisukan" : "Aktifkan"}</span>`;
+      const pronunciation = byId("vr-pronunciation");
+      pronunciation.disabled = !enabled || pronunciation.dataset.available !== "true";
+    }
   }
 
   function renderResponses(session, focusTarget) {
@@ -656,20 +701,30 @@
 
   byId("mission-bar").onclick = showShoppingList;
   byId("vr-close-panel").onclick = () => panel.close();
+  panel.addEventListener("close", () => {
+    if (!panel.open && panel.dataset.kind === "vocab") audio.stop();
+  });
   byId("vr-end-conversation").onclick = closeConversation;
   questionReplay.onclick = () => {
     if (!activeConversation) return;
     const id = activeConversation.spot.id;
     playDialogueAudio(vrDialogueAudio.clips(id, mission.transactions[id].turn).question);
   };
-  audioToggle.onclick = () => {
+  function toggleAudio() {
     audio.setEnabled(!audio.isEnabled());
     if (!audio.isEnabled()) {
       vrDialogueAudio.stop();
       audioStatus.textContent = "";
     }
     updateAudioControls();
-  };
+  }
+  audioToggle.onclick = toggleAudio;
+  window.addEventListener("pb:audio", (event) => {
+    const note = byId("vr-audio-note");
+    if (!panel.open || !note) return;
+    if (event.detail.message) note.textContent = event.detail.message;
+    byId("vr-pronunciation").classList.toggle("is-playing", event.detail.state === "playing");
+  });
   story.addEventListener("cancel", (event) => {
     if (story.dataset.phase === "intro" || story.dataset.phase === "briefing") event.preventDefault();
   });
@@ -678,6 +733,7 @@
     closeConversation();
   });
   viewer.on("scenechange", (id) => {
+    audio.stop();
     closeConversation();
     if (panel.open && panel.dataset.kind === "vocab") panel.close();
     mission.scene = id;
