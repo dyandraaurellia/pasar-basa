@@ -10,23 +10,48 @@
   </head>
   <body class="vr-page">
     <main id="panorama" aria-label="Panorama pasar 360 derajat">
-      <header id="vr-topbar">
-        <div class="vr-place">
-          <h1>Pasar Basa</h1>
-          <span id="vr-location" aria-live="polite">Pintu Masuk</span>
-        </div>
-        <nav class="vr-navigation" aria-label="Navigasi tur">
-          <button class="vr-btn" id="btn-back" type="button" disabled>← Kembali</button>
-          <a class="vr-btn" href="../index.html">Beranda</a>
+      <div id="vr-explore-chrome">
+        <header id="vr-topbar">
+          <div class="vr-place">
+            <h1>Pasar Basa</h1>
+            <span id="vr-location" aria-live="polite">Pintu Masuk</span>
+          </div>
+          <ol class="vr-journey" aria-label="Urutan lokasi pasar">
+            <li data-scene="pintu" aria-current="location">Pintu Masuk</li>
+            <li data-scene="lorong">Lorong</li>
+            <li data-scene="kios-sayur">Kios Sayur</li>
+            <li data-scene="kios-buah">Kios Buah</li>
+          </ol>
+          <div class="vr-explore-links">
+            <button class="vr-btn" id="vr-open-help" type="button" aria-haspopup="dialog">Bantuan</button>
+            <a class="vr-btn" href="../index.html">Beranda</a>
+          </div>
+        </header>
+        <button class="vr-mission-bar" id="mission-bar" type="button" aria-haspopup="dialog">
+          <span>Daftar belanja</span>
+          <strong id="vr-mission-count">0/3</strong>
+          <progress id="vr-mission-meter" value="0" max="3" aria-label="Barang sudah dibeli"></progress>
+          <span id="vr-next-goal"></span>
+        </button>
+        <nav class="vr-navigation" aria-label="Navigasi panorama">
+          <button class="vr-btn" id="btn-back" type="button" hidden></button>
+          <button class="vr-btn vr-route-next" id="vr-next-location" type="button" hidden></button>
+          <button class="vr-btn vr-guide" id="vr-show-direction" type="button" disabled>Tunjukkan Arah</button>
         </nav>
-      </header>
-      <button class="vr-mission-bar" id="mission-bar" type="button" aria-haspopup="dialog">
-        <span>Daftar belanja</span>
-        <strong id="vr-mission-count">0/3</strong>
-        <progress id="vr-mission-meter" value="0" max="3" aria-label="Barang sudah dibeli"></progress>
-        <span id="vr-next-goal"></span>
-      </button>
+      </div>
     </main>
+
+    <dialog id="vr-help" aria-labelledby="vr-help-title">
+      <h2 id="vr-help-title">Cara menjelajahi pasar</h2>
+      <ul>
+        <li>Geser layar atau mouse untuk melihat sekeliling.</li>
+        <li>Tekan panah hijau atau tombol nama lokasi untuk berpindah.</li>
+        <li>Tekan ikon buku emas untuk belajar kosakata.</li>
+        <li>Tekan ikon percakapan terakota untuk berbicara dengan penjual.</li>
+        <li>Tekan Tunjukkan Arah untuk menghadap ke penanda tujuan.</li>
+      </ul>
+      <form method="dialog"><button class="vr-btn" type="submit" autofocus>Tutup Bantuan</button></form>
+    </dialog>
 
     <dialog id="vr-conversation" aria-labelledby="vr-seller-name">
       <header class="vr-conversation-header">
@@ -40,8 +65,15 @@
 
       <div class="vr-speech">
         <div class="vr-bubble">
-          <h2 id="vr-seller-name"></h2>
+          <div class="vr-bubble-heading">
+            <h2 id="vr-seller-name"></h2>
+            <div class="vr-voice-controls" role="group" aria-label="Kontrol rekaman dialog">
+              <button class="vr-voice-button" id="vr-play-question" type="button" aria-label="Putar pertanyaan penjual" title="Putar pertanyaan penjual">🔉</button>
+              <button class="vr-voice-button" id="vr-audio-toggle" type="button" aria-label="Audio dialog" aria-pressed="true" title="Aktifkan atau nonaktifkan audio dialog">Aktif</button>
+            </div>
+          </div>
           <div id="vr-seller-line"></div>
+          <p id="vr-audio-status" role="status"></p>
         </div>
         <details class="vr-glossary" id="vr-glossary">
           <summary>Bantuan kosakata</summary>
@@ -82,6 +114,7 @@
     <script src="../shared/dialog-ui.js"></script>
     <script src="vr.js"></script>
     <script src="mission-content.js"></script>
+    <script src="vr-audio.js"></script>
     <script src="learning.js"></script>
   </body>
 </html>
